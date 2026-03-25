@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                    <li><a href="/cart">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders">My Orders</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
+                    <a href="/register" class="btn btn-primary" id="registerBtn">Register</a>
+                    <span id="userName" style="display: none;"></span>
+                    <a href="#" class="btn btn-outline" id="logoutBtn" style="display: none;">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="cart-container">
+        <div class="container">
+            <h2 class="section-title">Shopping Cart</h2>
+            <div id="cartMessage"></div>
+            <div id="cartItems"></div>
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>₹0</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Checkout</h3>
+                <button class="modal-close" onclick="closeCheckoutModal()">&times;</button>
+            </div>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>House No. / Building Name</label>
+                    <input type="text" id="houseNo" required placeholder="Flat No., House No., Building Name">
+                </div>
+                <div class="form-group">
+                    <label>Street / Area</label>
+                    <input type="text" id="street" required placeholder="Street Name, Area, Colony">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="city" required placeholder="City Name">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="state" required placeholder="State Name">
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" id="pincode" required placeholder="6-digit Pincode" maxlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod" required>
+                        <option value="Cash">Cash on Delivery</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Card">Debit/Credit Card</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Parivar Mart</h4>
+                    <p>Your trusted online shopping destination</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        checkSession();
+        loadCart();
+    </script>
+</body>
+</html>

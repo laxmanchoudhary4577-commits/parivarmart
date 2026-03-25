@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="admin-sidebar">
+        <a href="/" class="logo">Parivar Mart Admin</a>
+        <ul class="admin-nav">
+            <li><a href="/admin-dashboard" class="active">Dashboard</a></li>
+            <li><a href="/admin-products">Products</a></li>
+            <li><a href="/admin-orders">Orders</a></li>
+            <li><a href="/admin-users">Users</a></li>
+            <li><a href="#" id="adminLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Dashboard</h1>
+            <p>Welcome, <span id="adminName">Admin</span></p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <div class="value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Orders</h3>
+                <div class="value" id="pendingOrders" style="color: #ff9800;">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Products</h3>
+                <div class="value" id="totalProducts">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <div class="value" id="totalRevenue" style="color: #4caf50;">₹0</div>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 20px;">Recent Orders</h2>
+        <div id="recentOrders"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        checkAdminSession();
+        loadAdminStats();
+        loadRecentOrders();
+
+        document.getElementById('adminLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/admin/logout');
+            window.location.href = '/admin-login';
+        });
+    </script>
+</body>
+</html>

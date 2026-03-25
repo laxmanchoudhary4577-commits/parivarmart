@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="admin-sidebar">
+        <a href="/" class="logo">Parivar Mart Admin</a>
+        <ul class="admin-nav">
+            <li><a href="/admin-dashboard">Dashboard</a></li>
+            <li><a href="/admin-products" class="active">Products</a></li>
+            <li><a href="/admin-orders">Orders</a></li>
+            <li><a href="/admin-users">Users</a></li>
+            <li><a href="#" id="adminLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Manage Products</h1>
+            <button class="btn btn-primary" onclick="openProductModal()">Add New Product</button>
+        </div>
+
+        <div id="productMessage"></div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Product</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="productCategory" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="productPrice" required>
+                </div>
+                <div class="form-group">
+                    <label>Stock</label>
+                    <input type="number" id="productStock" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="productImage" placeholder="product.jpg">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        checkAdminSession();
+        loadAdminProducts();
+        loadCategoriesForAdmin();
+        
+        document.getElementById('adminLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/admin/logout');
+            window.location.href = '/admin-login';
+        });
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('productId').value;
+            const data = {
+                product_name: document.getElementById('productName').value,
+                category_id: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value,
+                price: document.getElementById('productPrice').value,
+                stock: document.getElementById('productStock').value,
+                image: document.getElementById('productImage').value
+            };
+
+            const url = productId ? '/admin/update-product/' + productId : '/admin/add-product';
+            const method = productId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                document.getElementById('productMessage').innerHTML = '<div class="alert alert-success">' + result.message + '</div>';
+                closeProductModal();
+                loadAdminProducts();
+            } else {
+                document.getElementById('productMessage').innerHTML = '<div class="alert alert-error">' + result.message + '</div>';
+            }
+        });
+
+        function openProductModal(product = null) {
+            document.getElementById('productModal').classList.add('active');
+            document.getElementById('modalTitle').textContent = product ? 'Edit Product' : 'Add Product';
+            
+            if (product) {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.product_name;
+                document.getElementById('productCategory').value = product.category_id;
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productStock').value = product.stock;
+                document.getElementById('productImage').value = product.image || '';
+            } else {
+                document.getElementById('productId').value = '';
+                document.getElementById('productForm').reset();
+            }
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

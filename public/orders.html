@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                    <li><a href="/cart">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders">My Orders</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
+                    <a href="/register" class="btn btn-primary" id="registerBtn">Register</a>
+                    <span id="userName" style="display: none;"></span>
+                    <a href="#" class="btn btn-outline" id="logoutBtn" style="display: none;">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="orders-container">
+        <div class="container">
+            <h2 class="section-title">My Orders</h2>
+            <div id="ordersMessage"></div>
+            <div id="ordersList"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Parivar Mart</h4>
+                    <p>Your trusted online shopping destination</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        checkSession();
+        loadOrders();
+    </script>
+</body>
+</html>

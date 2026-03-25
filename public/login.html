@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="auth-page-wrapper">
+        <div class="auth-image-side">
+            <h1>Welcome to Parivar Mart</h1>
+            <p>Your one-stop destination for daily essentials, fresh produce, and premium household items.</p>
+        </div>
+        <div class="auth-form-side">
+            <div class="auth-form-container">
+                <h2>User Login</h2>
+                <div id="loginMessage"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="password" placeholder="Enter your password" required style="width: 100%; padding: 14px 16px; border: 1.5px solid #e5e7eb; border-radius: 12px; font-size: 15px; padding-right: 40px;">
+                            <span onclick="togglePassword('password')" style="position: absolute; right: 14px; top: 14px; cursor: pointer; font-size: 18px; color: #6b7280;">&#128065;</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 14px; font-size: 16px; margin-top: 24px;">Login to Account</button>
+                </form>
+                <div class="auth-links">
+                    <p><a href="/forgot-password">Forgot Password?</a></p>
+                    <p style="margin-top: 12px;">Don't have an account? <a href="/register">Create one</a></p>
+                    <p style="margin-top: 12px; padding-top: 16px; border-top: 1px solid #e5e7eb;"><a href="/admin-login" style="color: #6b7280;">Admin Portal</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                    setTimeout(() => window.location.href = '/', 1000);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-error">' + data.message + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="alert alert-error">Server error</div>';
+            }
+        });
+    </script>
+</body>
+</html>

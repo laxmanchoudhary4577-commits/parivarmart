@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h2 class="section-title">Register</h2>
+        <div id="registerMessage"></div>
+        <form id="registerForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" required placeholder="10-digit Indian number">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="password" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; padding-right: 40px;" oninput="checkPasswordStrength()">
+                    <span onclick="togglePassword()" style="position: absolute; right: 10px; top: 12px; cursor: pointer; font-size: 18px;">&#128065;</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 14px;">
+                    <p id="pwd-upper" style="color: #999; margin: 5px 0;">&#10060; At least 1 Uppercase letter (A-Z)</p>
+                    <p id="pwd-lower" style="color: #999; margin: 5px 0;">&#10060; At least 1 Lowercase letter (a-z)</p>
+                    <p id="pwd-number" style="color: #999; margin: 5px 0;">&#10060; At least 1 Number (0-9)</p>
+                    <p id="pwd-symbol" style="color: #999; margin: 5px 0;">&#10060; At least 1 Symbol (!@#$%^&*)</p>
+                    <p id="pwd-length" style="color: #999; margin: 5px 0;">&#10060; At least 8 characters</p>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px;">
+            Already have an account? <a href="/login">Login</a>
+        </p>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const pwd = document.getElementById('password').value;
+            
+            const upper = /[A-Z]/.test(pwd);
+            const lower = /[a-z]/.test(pwd);
+            const number = /[0-9]/.test(pwd);
+            const symbol = /[!@#$%^&*]/.test(pwd);
+            const length = pwd.length >= 8;
+
+            document.getElementById('pwd-upper').innerHTML = upper ? '&#9989; At least 1 Uppercase letter (A-Z)' : '&#10060; At least 1 Uppercase letter (A-Z)';
+            document.getElementById('pwd-upper').style.color = upper ? '#4caf50' : '#999';
+
+            document.getElementById('pwd-lower').innerHTML = lower ? '&#9989; At least 1 Lowercase letter (a-z)' : '&#10060; At least 1 Lowercase letter (a-z)';
+            document.getElementById('pwd-lower').style.color = lower ? '#4caf50' : '#999';
+
+            document.getElementById('pwd-number').innerHTML = number ? '&#9989; At least 1 Number (0-9)' : '&#10060; At least 1 Number (0-9)';
+            document.getElementById('pwd-number').style.color = number ? '#4caf50' : '#999';
+
+            document.getElementById('pwd-symbol').innerHTML = symbol ? '&#9989; At least 1 Symbol (!@#$%^&*)' : '&#10060; At least 1 Symbol (!@#$%^&*)';
+            document.getElementById('pwd-symbol').style.color = symbol ? '#4caf50' : '#999';
+
+            document.getElementById('pwd-length').innerHTML = length ? '&#9989; At least 8 characters' : '&#10060; At least 8 characters';
+            document.getElementById('pwd-length').style.color = length ? '#4caf50' : '#999';
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('registerMessage');
+
+            const upper = /[A-Z]/.test(password);
+            const lower = /[a-z]/.test(password);
+            const number = /[0-9]/.test(password);
+            const symbol = /[!@#$%^&*]/.test(password);
+            const length = password.length >= 8;
+
+            if (!upper || !lower || !number || !symbol || !length) {
+                messageDiv.innerHTML = '<div class="alert alert-error">Password must meet all criteria above!</div>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                    setTimeout(() => window.location.href = '/login', 1500);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-error">' + data.message + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="alert alert-error">Server error</div>';
+            }
+        });
+    </script>
+</body>
+</html>

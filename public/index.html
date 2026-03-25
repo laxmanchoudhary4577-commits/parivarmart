@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parivar Mart - Online Shopping</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                    <li><a href="/cart">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders">My Orders</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
+                    <a href="/register" class="btn btn-primary" id="registerBtn">Register</a>
+                    <span id="userName" style="display: none;"></span>
+                    <a href="#" class="btn btn-outline" id="logoutBtn" style="display: none;">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Welcome to Parivar Mart</h1>
+            <p>Shop Best Quality Products at Amazing Prices</p>
+            <a href="/products" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid" id="categoryGrid">
+            </div>
+        </div>
+    </section>
+
+    <section class="products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="products-grid" id="productGrid">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Parivar Mart</h4>
+                    <p>Your trusted online shopping destination</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="/cart">Cart</a></li>
+                        <li><a href="/orders">My Orders</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>Email: info@parivanmart.com</li>
+                        <li>Phone: +91 1234567890</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        loadCategories();
+        loadProducts();
+        checkSession();
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">Parivar Mart</a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/products">Products</a></li>
+                    <li><a href="/cart">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders">My Orders</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
+                    <a href="/register" class="btn btn-primary" id="registerBtn">Register</a>
+                    <span id="userName" style="display: none;"></span>
+                    <a href="#" class="btn btn-outline" id="logoutBtn" style="display: none;">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="products">
+        <div class="container">
+            <h2 class="section-title">All Products</h2>
+            <div style="margin-bottom: 30px;">
+                <label>Filter by Category: </label>
+                <select id="categoryFilter" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="products-grid" id="productGrid">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Parivar Mart</h4>
+                    <p>Your trusted online shopping destination</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="/cart">Cart</a></li>
+                        <li><a href="/orders">My Orders</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryId = urlParams.get('category');
+        
+        async function initProducts() {
+            await loadCategoriesForFilter();
+            await loadProducts(categoryId);
+            checkSession();
+            
+            document.getElementById('categoryFilter').addEventListener('change', function() {
+                window.location.href = '/products?category=' + this.value;
+            });
+            
+            if (categoryId) {
+                document.getElementById('categoryFilter').value = categoryId;
+            }
+        }
+        
+        initProducts();
+    </script>
+</body>
+</html>

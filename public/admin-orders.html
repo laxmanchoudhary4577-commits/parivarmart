@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Parivar Mart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="admin-sidebar">
+        <a href="/" class="logo">Parivar Mart Admin</a>
+        <ul class="admin-nav">
+            <li><a href="/admin-dashboard">Dashboard</a></li>
+            <li><a href="/admin-products">Products</a></li>
+            <li><a href="/admin-orders" class="active">Orders</a></li>
+            <li><a href="/admin-users">Users</a></li>
+            <li><a href="#" id="adminLogout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Manage Orders</h1>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>User Details</th>
+                    <th>Shipping Address</th>
+                    <th>Products</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal" id="statusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Order Status</h3>
+                <button class="modal-close" onclick="closeStatusModal()">&times;</button>
+            </div>
+            <form id="statusForm">
+                <input type="hidden" id="orderId">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="orderStatus">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        checkAdminSession();
+        loadAdminOrders();
+
+        document.getElementById('adminLogout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/admin/logout');
+            window.location.href = '/admin-login';
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const orderId = document.getElementById('orderId').value;
+            const status = document.getElementById('orderStatus').value;
+
+            const res = await fetch('/admin/update-order/' + orderId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                closeStatusModal();
+                loadAdminOrders();
+            }
+        });
+
+        function openStatusModal(orderId, currentStatus) {
+            document.getElementById('statusModal').classList.add('active');
+            document.getElementById('orderId').value = orderId;
+            document.getElementById('orderStatus').value = currentStatus;
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
