@@ -4,19 +4,15 @@
   "description": "Parivar Mart - E-Commerce Website",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo 'No build step required'",
-    "install": "npm install"
-  },
-  "engines": {
-    "node": ">=14.0.0"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "sql.js": "^1.10.3",
+    "mysql2": "^3.6.5",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "express-session": "^1.17.3"
+    "express-session": "^1.17.3",
+    "dotenv": "^16.3.1"
   }
 }
