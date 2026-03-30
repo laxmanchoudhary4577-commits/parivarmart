@@ -11,6 +11,7 @@ router.get('/orders', (req, res) => res.sendFile(path.join(publicPath, 'orders.h
 router.get('/login', (req, res) => res.sendFile(path.join(publicPath, 'login.html')));
 router.get('/register', (req, res) => res.sendFile(path.join(publicPath, 'register.html')));
 router.get('/forgot-password', (req, res) => res.sendFile(path.join(publicPath, 'forgot-password.html')));
+router.get('/verify-otp', (req, res) => res.sendFile(path.join(publicPath, 'verify-otp.html')));
 router.get('/reset-password', (req, res) => res.sendFile(path.join(publicPath, 'reset-password.html')));
 
 // Admin Views

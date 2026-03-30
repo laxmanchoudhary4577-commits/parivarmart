@@ -23,9 +23,11 @@ app.use(session({
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
 const viewRoutes = require('./routes/viewRoutes');
+const authRoutes = require('./routes/auth');
 
 // Use Routes
 app.use('/api', apiRoutes);
+app.use('/api', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/', viewRoutes);
 

@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#16a34a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Reset Password - Parivar Mart</title>
+    <title>Verify OTP - Parivar Mart</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
@@ -84,7 +84,7 @@
         .auth-card {
             background: var(--glass);
             border-radius: 24px;
-            padding: 50px 40px;
+            padding: 45px 40px;
             box-shadow: var(--shadow-premium);
             border: 1px solid rgba(22, 163, 74, 0.1);
             backdrop-filter: blur(20px);
@@ -97,95 +97,88 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .logo-wrap { margin-bottom: 30px; }
+        .logo-wrap { margin-bottom: 25px; }
         
         .logo-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             box-shadow: 0 10px 30px rgba(22, 163, 74, 0.25);
-            animation: pulse 2s infinite ease-in-out;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 10px 30px rgba(22, 163, 74, 0.25); }
-            50% { box-shadow: 0 10px 40px rgba(22, 163, 74, 0.4); }
         }
         
         .logo-icon i {
-            font-size: 36px;
+            font-size: 32px;
             color: white;
         }
 
         .brand-name {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--green-dark);
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .brand-tagline {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 35px;
-            font-weight: 400;
+            margin-bottom: 5px;
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 600;
             color: var(--black-rich);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .header p {
             color: var(--text-muted);
-            font-size: 15px;
-            margin-bottom: 30px;
+            font-size: 14px;
+            margin-bottom: 25px;
             line-height: 1.5;
         }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
+        .email-display {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 10px 16px;
+            border-radius: 10px;
             font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 8px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            display: inline-block;
         }
 
-        .input-group input {
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 14px;
+        .otp-grid { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            margin: 20px 0 30px; 
+        }
+        
+        .otp-grid input { 
+            width: 48px; 
+            height: 56px; 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: 700; 
+            border-radius: 12px; 
             border: 2px solid #e2e8f0;
             background: #f8fafc;
-            font-size: 15px;
-            font-family: inherit;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-dark);
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
-
-        .input-group input:focus {
+        
+        .otp-grid input:focus {
             outline: none;
             border-color: var(--green-primary);
             background: white;
-            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+            transform: scale(1.05);
         }
-
-        .input-group input::placeholder {
-            color: #94a3b8;
+        
+        .otp-grid input::placeholder { 
+            color: #cbd5e1; 
         }
 
         .btn-primary {
@@ -220,7 +213,7 @@
         }
 
         .footer-links {
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 14px;
             color: var(--text-muted);
         }
@@ -273,21 +266,14 @@
                 border-radius: 20px;
             }
             
-            .logo-icon {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .logo-icon i {
-                font-size: 30px;
-            }
-            
-            .brand-name {
-                font-size: 24px;
-            }
-            
-            .header h1 {
+            .otp-grid input {
+                width: 42px;
+                height: 50px;
                 font-size: 20px;
+            }
+            
+            .otp-grid {
+                gap: 8px;
             }
         }
     </style>
@@ -306,37 +292,82 @@
         <div class="auth-card">
             <div class="logo-wrap">
                 <div class="logo-icon">
-                    <i class="fas fa-shopping-basket"></i>
+                    <i class="fas fa-shield-halved"></i>
                 </div>
                 <div class="brand-name">Parivar Mart</div>
-                <div class="brand-tagline">Your Trusted Grocery Partner</div>
             </div>
             
             <div class="header">
-                <h1>Forgot Password?</h1>
-                <p>No worries! Enter your email address and we'll send you a verification code to reset your password.</p>
+                <h1>Verify Your Email</h1>
+                <p>Enter the 6-digit code sent to your email address</p>
+            </div>
+
+            <div class="email-display">
+                <i class="fas fa-envelope"></i> 
+                <span id="emailDisplay"></span>
             </div>
 
             <div id="alertBox" class="alert"></div>
 
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email" required>
+            <div class="otp-grid">
+                <input type="text" id="otp_1" maxlength="1" oninput="moveFocus(this, 1)" placeholder="0">
+                <input type="text" id="otp_2" maxlength="1" oninput="moveFocus(this, 2)" placeholder="0">
+                <input type="text" id="otp_3" maxlength="1" oninput="moveFocus(this, 3)" placeholder="0">
+                <input type="text" id="otp_4" maxlength="1" oninput="moveFocus(this, 4)" placeholder="0">
+                <input type="text" id="otp_5" maxlength="1" oninput="moveFocus(this, 5)" placeholder="0">
+                <input type="text" id="otp_6" maxlength="1" oninput="moveFocus(this, 6)" placeholder="0">
             </div>
+            
+            <input type="hidden" id="email">
+            
+            <script>
+                const emailFromStorage = localStorage.getItem('recoveryEmail');
+                if(emailFromStorage) {
+                    document.getElementById('email').value = emailFromStorage;
+                    document.getElementById('emailDisplay').textContent = emailFromStorage;
+                }
+            </script>
 
-            <button class="btn-primary" id="otpBtn" onclick="sendOTP()">
-                <span class="btn-text">Send Verification Code</span>
-                <i class="fas fa-paper-plane"></i>
+            <button class="btn-primary" id="verifyBtn" onclick="verifyOTP()">
+                <span class="btn-text">Verify Code</span>
+                <i class="fas fa-check-circle"></i>
                 <div class="spinner"></div>
             </button>
-
+            
             <div class="footer-links">
-                Remember your password? <a href="login.html">Back to Login</a>
+                <a href="forgot-password.html"><i class="fas fa-arrow-left"></i> Go Back</a>
             </div>
         </div>
     </div>
 
     <script>
+        const userEmail = localStorage.getItem('recoveryEmail');
+        
+        if (!userEmail) {
+            window.location.href = 'forgot-password.html';
+        }
+
+        function moveFocus(el, index) {
+            const inputs = document.querySelectorAll('.otp-grid input');
+            
+            if (el.value.length === 1 && index < 6) {
+                inputs[index].focus();
+            }
+            
+            if (el.value === '' && index > 1) {
+                inputs[index - 2].focus();
+            }
+        }
+
+        document.querySelectorAll('.otp-grid input').forEach((input, index) => {
+            input.addEventListener('keydown', (e) => {
+                const allInputs = document.querySelectorAll('.otp-grid input');
+                if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                    allInputs[index - 1].focus();
+                }
+            });
+        });
+
         function showAlert(msg, type) {
             const box = document.getElementById('alertBox');
             box.textContent = msg;
@@ -355,47 +386,41 @@
             spinner.style.display = isLoading ? 'inline-block' : 'none';
         }
 
-        async function sendOTP() {
-            const emailInput = document.getElementById('email');
-            const userEmail = emailInput.value.trim();
+        async function verifyOTP() {
+            const email = document.getElementById("email").value;
+            const inputs = document.querySelectorAll('.otp-grid input');
+            const otpValue = Array.from(inputs).map(i => i.value).join('');
             
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!userEmail || !emailRegex.test(userEmail)) {
-                return showAlert('Please enter a valid email address', 'error');
+            if (otpValue.length < 6) {
+                return showAlert('Please enter the full 6-digit code', 'error');
             }
-            
-            const btn = document.getElementById("otpBtn");
+
+            const btn = document.getElementById('verifyBtn');
             setLoading(btn, true);
 
             try {
-                const res = await fetch('/api/send-otp', {
+                const res = await fetch('/api/verify-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userEmail })
+                    body: JSON.stringify({ email: email, otp: otpValue })
                 });
                 const data = await res.json();
                 
                 if (res.ok) {
-                    localStorage.setItem('recoveryEmail', userEmail);
-                    showAlert('Verification code sent to your email!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'verify-otp.html';
-                    }, 1500);
+                    localStorage.setItem('otpVerified', 'true');
+                    showAlert('OTP Verified! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = 'reset-password.html', 1500);
                 } else {
-                    showAlert(data.error || data.message || 'Email not found in our records', 'error');
+                    showAlert(data.error || data.message || 'Invalid OTP', 'error');
+                    inputs.forEach(input => input.value = '');
+                    inputs[0].focus();
                 }
             } catch (e) {
-                showAlert('Connection error. Please try again.', 'error');
+                showAlert('Server connection error', 'error');
             } finally {
                 setLoading(btn, false);
             }
         }
-
-        document.getElementById('email').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendOTP();
-            }
-        });
     </script>
 </body>
 </html>
