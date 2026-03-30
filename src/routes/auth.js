@@ -1,17 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -36,13 +30,13 @@ router.post("/send-otp", async (req, res) => {
       [otp, expiry, email]
     );
 
-    console.log('--- Development OTP Log ---');
+    console.log('--- OTP Log ---');
     console.log(`Email: ${email}`);
-    console.log(`OTP:   ${otp}`);
-    console.log('---------------------------');
+    console.log(`OTP: ${otp}`);
+    console.log('----------------');
 
-    await transporter.sendMail({
-      from: `"Parivar Mart Support" <${process.env.EMAIL_USER}>`,
+    const data = await resend.emails.send({
+      from: 'Parivar Mart <onboarding@resend.dev>',
       to: email,
       subject: "Password Reset OTP - Parivar Mart",
       html: `
@@ -95,7 +89,7 @@ router.post("/reset-password", async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await db.query(
-      "UPDATE users SET password=$1, otp=NULL, otp_expiry=NULL WHERE email=$2",
+      "UPDATE users SET password=$1, otp=NULL, otp=NULL, otp_expiry=NULL WHERE email=$2",
       [hashedPassword, email]
     );
 
