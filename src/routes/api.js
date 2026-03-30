@@ -4,6 +4,14 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
+router.get('/check-session', (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ loggedIn: true, user: req.session.user });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
 router.get('/seed-products', async (req, res) => {
     try {
         const productsData = [
