@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(session({
-    secret: 'ecommerce-secret-key-2024',
+    secret: process.env.SESSION_SECRET || 'ecommerce-secret-key-2024',
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 24 * 60 * 60 * 1000 }

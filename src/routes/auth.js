@@ -1,129 +1,114 @@
 const express = require("express");
 const router = express.Router();
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
+const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ⚙️ 4. Nodemailer setup
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
+// 🔢 5. Send OTP API
 router.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
-
-    const [user] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-
-    if (user.length === 0) {
+    const [userCheck] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (userCheck.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const expiry = Date.now() + 5 * 60 * 1000;
+    const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
 
-    await db.query("DELETE FROM otp_verification WHERE email = ?", [email]);
-    
+    const expiry = Date.now() + 5 * 60 * 1000; // 5 min
+
+    // save OTP in DB
     await db.query(
-      "INSERT INTO otp_verification (email, otp, expiry, is_verified) VALUES (?, ?, ?, FALSE)",
-      [email, otp, expiry]
+      "UPDATE users SET otp=?, otp_expiry=? WHERE email=?",
+      [otp, expiry, email]
     );
 
-    await resend.emails.send({
-      from: "Parivar Mart <onboarding@resend.dev>",
+    console.log('--- Development OTP Log ---');
+    console.log(`Email: ${email}`);
+    console.log(`OTP:   ${otp}`);
+    console.log('---------------------------');
+
+    // send email
+    await transporter.sendMail({
+      from: `"Parivar Mart Support" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Password Reset OTP - Parivar Mart",
       html: `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 450px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; background: #f0fdf4;">
-          <div style="text-align: center; margin-bottom: 25px;">
-            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #16a34a, #15803d); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-              <span style="font-size: 32px;">🛒</span>
-            </div>
-            <h2 style="color: #15803d; margin: 0; font-size: 24px;">Parivar Mart</h2>
-            <p style="color: #64748b; margin: 5px 0 0; font-size: 14px;">Your Trusted Grocery Partner</p>
-          </div>
-          
-          <div style="background: white; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 20px;">
-            <p style="color: #1e293b; margin: 0 0 15px; font-size: 16px;">Your password reset verification code is:</p>
-            <h1 style="font-size: 42px; letter-spacing: 12px; color: #16a34a; margin: 0; font-weight: 700;">${otp}</h1>
-            <p style="color: #ef4444; font-size: 13px; margin: 20px 0 0;">⏰ This OTP will expire in <strong>5 minutes</strong></p>
-          </div>
-          
-          <p style="color: #64748b; font-size: 13px; text-align: center; margin: 0;">If you didn't request this password reset, please ignore this email.</p>
-          
-          <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-            <p style="color: #94a3b8; font-size: 12px; margin: 0;">© 2024 Parivar Mart. All rights reserved.</p>
-          </div>
+        <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; border-radius: 10px; background: #f0fdf4;">
+          <h2 style="color: #16a34a;">Password Reset OTP</h2>
+          <p>Your verification code is:</p>
+          <h1 style="letter-spacing: 5px; color: #15803d;">${otp}</h1>
+          <p>Valid for 5 minutes only.</p>
+          <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
+          <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
         </div>
       `,
     });
 
     res.json({ message: "OTP sent successfully" });
-
   } catch (err) {
     console.error("Send OTP Error:", err);
     res.status(500).json({ message: "Error sending OTP: " + err.message });
   }
 });
 
+// ✅ 6. Verify OTP API
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    await db.query("DELETE FROM otp_verification WHERE expiry < ?", [Date.now()]);
+    const [user] = await db.query(
+      "SELECT * FROM users WHERE email=?",
+      [email]
+    );
 
-    const [records] = await db.query("SELECT * FROM otp_verification WHERE email = ? AND is_verified = FALSE ORDER BY create_at DESC LIMIT 1", [email]);
+    if (user.length === 0) return res.status(400).json({ message: "User not found" });
 
-    if (records.length === 0) {
-      return res.status(400).json({ message: "No OTP found or already verified" });
-    }
-
-    const record = records[0];
-    if (Date.now() > record.expiry) {
-      await db.query("DELETE FROM otp_verification WHERE id = ?", [record.id]);
-      return res.status(400).json({ message: "OTP expired" });
-    }
-
-    if (record.otp != otp) {
+    if (user[0].otp !== otp)
       return res.status(400).json({ message: "Invalid OTP" });
-    }
 
-    await db.query("UPDATE otp_verification SET is_verified = TRUE WHERE id = ?", [record.id]);
+    if (Date.now() > user[0].otp_expiry)
+      return res.status(400).json({ message: "OTP expired" });
 
     res.json({ message: "OTP verified" });
-
   } catch (err) {
     console.error("Verify OTP Error:", err);
     res.status(500).json({ message: "Error verifying OTP: " + err.message });
   }
 });
 
+// 🔐 7. Reset Password API
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
-
-    const [records] = await db.query("SELECT * FROM otp_verification WHERE email = ? AND is_verified = TRUE ORDER BY created_at DESC LIMIT 1", [email]);
-    
-    if (records.length === 0) {
-      return res.status(403).json({ message: "Access denied. Verify OTP first." });
-    }
-
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await db.query("UPDATE users SET password = ? WHERE email = ?", [hashedPassword, email]);
-    await db.query("DELETE FROM otp_verification WHERE email = ?", [email]);
+    await db.query(
+      "UPDATE users SET password=?, otp=NULL, otp_expiry=NULL WHERE email=?",
+      [hashedPassword, email]
+    );
 
-    res.json({ message: "Password updated successfully" });
-
+    res.json({ message: "Password reset successful" });
   } catch (err) {
     console.error("Reset Password Error:", err);
-    res.status(500).json({ message: "Error updating password: " + err.message });
+    res.status(500).json({ message: "Error resetting password: " + err.message });
   }
 });
 

@@ -333,6 +333,13 @@
                 <i class="fas fa-check-circle"></i>
                 <div class="spinner"></div>
             </button>
+
+            <div class="resend-wrap" style="margin-top: 20px; font-size: 14px; color: var(--text-muted);">
+                Didn't receive the code? 
+                <button id="resendBtn" onclick="resendOTP()" style="background: none; border: none; color: var(--green-primary); font-weight: 600; cursor: pointer; text-decoration: underline;" disabled>
+                    Resend <span id="timer">(60s)</span>
+                </button>
+            </div>
             
             <div class="footer-links">
                 <a href="forgot-password.html"><i class="fas fa-arrow-left"></i> Go Back</a>
@@ -421,6 +428,57 @@
                 setLoading(btn, false);
             }
         }
+
+        // Timer Logic
+        let timeLeft = 60;
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            timeLeft = 60;
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = `(${timeLeft}s)`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    resendBtn.disabled = false;
+                    timerEl.textContent = '';
+                }
+            }, 1000);
+        }
+
+        async function resendOTP() {
+            const email = localStorage.getItem('recoveryEmail');
+            const resendBtn = document.getElementById('resendBtn');
+            const originalColor = resendBtn.style.color;
+            
+            resendBtn.disabled = true;
+            resendBtn.style.color = '#94a3b8';
+
+            try {
+                const res = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                if (res.ok) {
+                    showAlert('New verification code sent!', 'success');
+                    startTimer();
+                } else {
+                    showAlert('Error resending OTP. Please try again.', 'error');
+                    resendBtn.disabled = false;
+                    resendBtn.style.color = originalColor;
+                }
+            } catch (e) {
+                showAlert('Server connection error', 'error');
+                resendBtn.disabled = false;
+                resendBtn.style.color = originalColor;
+            }
+        }
+
+        window.onload = startTimer;
     </script>
 </body>
 </html>
