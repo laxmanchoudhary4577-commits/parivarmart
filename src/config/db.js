@@ -1,10 +1,27 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+function parseConnectionString(urlStr) {
+    const url = new URL(urlStr);
+    return {
+        host: url.hostname,
+        port: parseInt(url.port) || 3306,
+        user: url.username,
+        password: url.password,
+        database: url.pathname.slice(1)
+    };
+}
+
 let pool;
 
 if (process.env.MYSQLPUBLIC_URL) {
-    pool = mysql.createPool(process.env.MYSQLPUBLIC_URL);
+    const config = parseConnectionString(process.env.MYSQLPUBLIC_URL);
+    pool = mysql.createPool({
+        ...config,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
 } else {
     pool = mysql.createPool({
         host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
