@@ -279,6 +279,97 @@ function closeCheckoutModal() {
     document.getElementById('checkoutModal').classList.remove('active');
 }
 
+function togglePaymentSection() {
+    const method = document.getElementById('paymentMethod').value;
+    document.getElementById('razorpaySection').style.display = method === 'Razorpay' ? 'block' : 'none';
+    document.getElementById('codSection').style.display = method === 'Razorpay' ? 'none' : 'block';
+}
+
+let currentOrderTotal = 0;
+
+async function initiateRazorpayPayment() {
+    try {
+        const houseNo = document.getElementById('houseNo').value;
+        const street = document.getElementById('street').value;
+        const city = document.getElementById('city').value;
+        const state = document.getElementById('state').value;
+        const pincode = document.getElementById('pincode').value;
+        
+        if (!houseNo || !street || !city || !state || !pincode) {
+            alert('Please fill all address details');
+            return;
+        }
+
+        const totalText = document.getElementById('cartTotal').textContent.replace('₹', '');
+        currentOrderTotal = parseFloat(totalText);
+
+        const res = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: currentOrderTotal })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            alert('Error creating order');
+            return;
+        }
+
+        const options = {
+            key: 'rzp_test_y0e2E3kqJw6qVd',
+            amount: data.order.amount,
+            currency: 'INR',
+            name: 'Parivar Mart',
+            description: 'Order Payment',
+            order_id: data.order.id,
+            handler: async function(response) {
+                const verifyRes = await fetch('/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                });
+                const verifyData = await verifyRes.json();
+                
+                if (verifyData.success) {
+                    const shipping_address = `${houseNo}, ${street}, ${city}, ${state} - ${pincode}`;
+                    const orderRes = await fetch('/api/order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            shipping_address, 
+                            payment_method: 'Online Paid',
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id
+                        })
+                    });
+                    const orderData = await orderRes.json();
+                    
+                    if (orderData.success) {
+                        alert('Payment successful! Order placed!');
+                        closeCheckoutModal();
+                        window.location.href = '/orders';
+                    }
+                } else {
+                    alert('Payment verification failed');
+                }
+            },
+            theme: {
+                color: '#16a34a'
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } catch (error) {
+        console.error('Payment error:', error);
+        alert('Payment error');
+    }
+}
+
 document.getElementById('checkoutForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     

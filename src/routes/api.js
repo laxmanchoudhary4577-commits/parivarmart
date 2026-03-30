@@ -36,6 +36,9 @@ router.post('/register', async (req, res) => {
         if (!name || !email || !phone || !password) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         }
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits' });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         await pool.query('INSERT INTO users (name, email, phone, password) VALUES ($1, $2, $3, $4)', [name, email, phone, hashedPassword]);
         res.json({ success: true, message: 'Registration successful!' });
@@ -123,6 +126,20 @@ router.delete('/cart/remove/:id', isAuthenticated, async (req, res) => {
     try {
         await pool.query('DELETE FROM cart WHERE id = $1 AND user_id = $2', [req.params.id, req.session.user.id]);
         res.json({ success: true, message: 'Item removed!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.put('/cart/update/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { quantity } = req.body;
+        if (quantity < 1) {
+            await pool.query('DELETE FROM cart WHERE id = $1 AND user_id = $2', [req.params.id, req.session.user.id]);
+            return res.json({ success: true, message: 'Item removed!' });
+        }
+        await pool.query('UPDATE cart SET quantity = $1 WHERE id = $2 AND user_id = $3', [quantity, req.params.id, req.session.user.id]);
+        res.json({ success: true, message: 'Cart updated!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }

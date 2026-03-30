@@ -24,10 +24,12 @@ const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
 const viewRoutes = require('./routes/viewRoutes');
 const authRoutes = require('./routes/auth');
+const paymentRoutes = require('./routes/payment');
 
 // Use Routes
 app.use('/api', apiRoutes);
 app.use('/api', authRoutes);
+app.use('/api', paymentRoutes);
 app.use('/admin', adminRoutes);
 app.use('/', viewRoutes);
 
