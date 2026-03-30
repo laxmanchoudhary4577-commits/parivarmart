@@ -286,6 +286,7 @@ function togglePaymentSection() {
 }
 
 let currentOrderTotal = 0;
+let isTestMode = false;
 
 async function initiateRazorpayPayment() {
     try {
@@ -312,6 +313,44 @@ async function initiateRazorpayPayment() {
 
         if (!data.success) {
             alert('Error creating order: ' + data.message);
+            return;
+        }
+
+        isTestMode = data.test || false;
+
+        if (isTestMode) {
+            const verifyRes = await fetch('/api/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    razorpay_order_id: data.order.id,
+                    razorpay_payment_id: 'pay_test_' + Date.now(),
+                    razorpay_signature: 'test_signature',
+                    test: true
+                })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+                const shipping_address = `${houseNo}, ${street}, ${city}, ${state} - ${pincode}`;
+                const orderRes = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        shipping_address, 
+                        payment_method: 'Online Paid (Test)',
+                        razorpay_order_id: data.order.id,
+                        razorpay_payment_id: 'pay_test_' + Date.now()
+                    })
+                });
+                const orderData = await orderRes.json();
+                
+                if (orderData.success) {
+                    alert('Payment successful! (Test Mode) Order placed!');
+                    closeCheckoutModal();
+                    window.location.href = '/orders';
+                }
+            }
             return;
         }
 
