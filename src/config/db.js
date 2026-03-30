@@ -1,16 +1,9 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const dbConfig = process.env.MYSQL_URL 
-    ? process.env.MYSQL_URL 
-    : {
-        host: process.env.DB_HOST || 'localhost',
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || '',
-        database: process.env.DB_NAME || 'parivar_mart',
-        port: process.env.DB_PORT || 3306
-      };
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-const db = mysql.createPool(dbConfig);
-
-module.exports = db;
+module.exports = pool;
