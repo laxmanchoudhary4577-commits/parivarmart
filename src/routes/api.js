@@ -4,6 +4,32 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
+router.get('/seed-products', async (req, res) => {
+    try {
+        const productsData = [
+            ['Fresh Apples (1kg)', 1, 'Premium quality red apples', 120, 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400', 50],
+            ['Banana (1 dozen)', 1, 'Fresh yellow bananas', 50, 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400', 100],
+            ['Milk (1L)', 2, 'Fresh toned milk', 45, 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400', 200],
+            ['Eggs (12 pcs)', 2, 'Farm fresh eggs', 60, 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400', 150],
+            ['Whole Wheat Bread', 3, 'Freshly baked bread', 40, 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', 80],
+            ['Butter (500g)', 2, 'Pure dairy butter', 180, 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400', 60],
+            ['Coca Cola (1L)', 4, 'Refreshing soft drink', 40, 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400', 100],
+            ['Orange Juice (1L)', 4, 'Fresh orange juice', 80, 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400', 50],
+            ['Chips (100g)', 5, 'Crunchy potato chips', 30, 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400', 200],
+            ['Shampoo (500ml)', 6, 'Anti-dandruff shampoo', 250, 'https://images.unsplash.com/photo-1556228578-8c89e6fb0342?w=400', 40],
+            ['Soap (4 pcs)', 6, 'Moisturizing soap bar', 80, 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=400', 100],
+            ['Detergent (1kg)', 7, 'Front load detergent', 180, 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400', 60],
+            ['Diapers (30 pcs)', 8, 'Premium baby diapers', 450, 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400', 30],
+        ];
+        for (const [name, catId, desc, price, image, stock] of productsData) {
+            await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES ($1, $2, $3, $4, $5, $6)', [name, catId, desc, price, image, stock]);
+        }
+        res.json({ success: true, message: 'Products seeded!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 router.post('/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
