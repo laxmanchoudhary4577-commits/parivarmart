@@ -12,6 +12,10 @@ router.post('/create-order', async (req, res) => {
     try {
         const { amount } = req.body;
         
+        if (!amount || amount <= 0) {
+            return res.status(400).json({ success: false, message: 'Invalid amount' });
+        }
+
         const options = {
             amount: Math.round(amount * 100),
             currency: 'INR',
@@ -22,7 +26,7 @@ router.post('/create-order', async (req, res) => {
         res.json({ success: true, order });
     } catch (error) {
         console.error('Razorpay error:', error);
-        res.status(500).json({ success: false, message: 'Payment error' });
+        res.status(500).json({ success: false, message: error.message || 'Payment error' });
     }
 });
 

@@ -311,7 +311,7 @@ async function initiateRazorpayPayment() {
         const data = await res.json();
 
         if (!data.success) {
-            alert('Error creating order');
+            alert('Error creating order: ' + data.message);
             return;
         }
 
