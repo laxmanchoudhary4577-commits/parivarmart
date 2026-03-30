@@ -529,3 +529,80 @@ async function loadAdminUsers() {
         console.error('Load admin users error:', error);
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Main Navbar Toggle
+    const navbar = document.querySelector('.navbar');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (navbar && navLinks) {
+        const navToggle = document.createElement('button');
+        navToggle.className = 'nav-toggle';
+        navToggle.innerHTML = '☰';
+        navToggle.setAttribute('aria-label', 'Toggle navigation');
+        navbar.insertBefore(navToggle, navLinks);
+        
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            navToggle.innerHTML = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!navbar.contains(e.target) && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                navToggle.innerHTML = '☰';
+            }
+        });
+    }
+
+    // Admin Sidebar Toggle
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminContent = document.querySelector('.admin-content');
+    
+    if (adminSidebar && adminContent) {
+        const adminToggle = document.createElement('button');
+        adminToggle.className = 'admin-toggle';
+        adminToggle.innerHTML = '☰ Menu';
+        adminToggle.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1001;
+            padding: 8px 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            display: none;
+            cursor: pointer;
+            font-weight: 600;
+        `;
+        document.body.appendChild(adminToggle);
+
+        // Update display based on screen size
+        const checkWidth = () => {
+            if (window.innerWidth <= 768) {
+                adminToggle.style.display = 'block';
+            } else {
+                adminToggle.style.display = 'none';
+                adminSidebar.style.display = 'block';
+            }
+        };
+
+        window.addEventListener('resize', checkWidth);
+        checkWidth();
+
+        adminToggle.addEventListener('click', () => {
+            if (adminSidebar.style.display === 'none' || adminSidebar.style.display === '') {
+                adminSidebar.style.display = 'block';
+                adminSidebar.style.position = 'fixed';
+                adminSidebar.style.zIndex = '1000';
+                adminSidebar.style.width = '100%';
+                adminToggle.innerHTML = '✕ Close';
+            } else {
+                adminSidebar.style.display = 'none';
+                adminToggle.innerHTML = '☰ Menu';
+            }
+        });
+    }
+});
