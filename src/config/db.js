@@ -14,8 +14,13 @@ function parseConnectionString(urlStr) {
 
 let pool;
 
-if (process.env.MYSQLPUBLIC_URL) {
+console.log('Environment check:');
+console.log('MYSQLPUBLIC_URL:', process.env.MYSQLPUBLIC_URL ? 'SET' : 'NOT SET');
+console.log('MYSQLHOST:', process.env.MYSQLHOST);
+
+if (process.env.MYSQLPUBLIC_URL && process.env.MYSQLPUBLIC_URL.includes('mysql://')) {
     const config = parseConnectionString(process.env.MYSQLPUBLIC_URL);
+    console.log('Using MYSQLPUBLIC_URL with config:', { ...config, password: '***' });
     pool = mysql.createPool({
         ...config,
         waitForConnections: true,
@@ -23,12 +28,13 @@ if (process.env.MYSQLPUBLIC_URL) {
         queueLimit: 0
     });
 } else {
+    console.log('Using individual env vars');
     pool = mysql.createPool({
         host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
         user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
         password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
         database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'parivar_mart',
-        port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
+        port: parseInt(process.env.MYSQLPORT) || parseInt(process.env.DB_PORT) || 3306,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
