@@ -3,9 +3,12 @@ const router = express.Router();
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
-const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+  const { Resend } = require('resend');
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -35,7 +38,7 @@ router.post("/send-otp", async (req, res) => {
     console.log(`OTP: ${otp}`);
     console.log('----------------');
 
-    if (process.env.RESEND_API_KEY) {
+    if (resend) {
       try {
         await resend.emails.send({
           from: 'Parivar Mart <onboarding@resend.dev>',
