@@ -1,27 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
+const { Resend } = require('resend');
 
-let transporter = null;
-
-async function getTransporter() {
-  if (!transporter) {
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-        connectionTimeout: 10000,
-      });
-    }
-  }
-  return transporter;
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -51,12 +35,10 @@ router.post("/send-otp", async (req, res) => {
     console.log(`OTP: ${otp}`);
     console.log('----------------');
 
-    const transport = await getTransporter();
-    
-    if (transport) {
+    if (process.env.RESEND_API_KEY) {
       try {
-        await transport.sendMail({
-          from: `"Parivar Mart" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+          from: 'Parivar Mart <onboarding@resend.dev>',
           to: email,
           subject: "Password Reset OTP - Parivar Mart",
           html: `
