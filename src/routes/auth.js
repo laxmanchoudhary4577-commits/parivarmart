@@ -36,7 +36,7 @@ router.post("/send-otp", async (req, res) => {
     console.log('----------------');
 
     const { data, error } = await resend.emails.send({
-      from: 'Parivar Mart <noreply@parivarmart.com>',
+      from: 'Parivar Mart <onboarding@resend.dev>',
       to: email,
       subject: "Password Reset OTP - Parivar Mart",
       html: `
