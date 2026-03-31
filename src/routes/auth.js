@@ -4,11 +4,8 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 
-let resend = null;
-if (process.env.RESEND_API_KEY) {
-  const { Resend } = require('resend');
-  resend = new Resend(process.env.RESEND_API_KEY);
-}
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -38,26 +35,24 @@ router.post("/send-otp", async (req, res) => {
     console.log(`OTP: ${otp}`);
     console.log('----------------');
 
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: 'Parivar Mart <onboarding@resend.dev>',
-          to: email,
-          subject: "Password Reset OTP - Parivar Mart",
-          html: `
-            <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; border-radius: 10px; background: #f0fdf4;">
-              <h2 style="color: #16a34a;">Password Reset OTP</h2>
-              <p>Your verification code is:</p>
-              <h1 style="letter-spacing: 5px; color: #15803d;">${otp}</h1>
-              <p>Valid for 5 minutes only.</p>
-              <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
-              <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
-            </div>
-          `,
-        });
-      } catch (emailErr) {
-        console.log('Email send failed:', emailErr.message);
-      }
+    try {
+      await resend.emails.send({
+        from: 'Parivar Mart <onboarding@resend.dev>',
+        to: email,
+        subject: "Password Reset OTP - Parivar Mart",
+        html: `
+          <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; border-radius: 10px; background: #f0fdf4;">
+            <h2 style="color: #16a34a;">Password Reset OTP</h2>
+            <p>Your verification code is:</p>
+            <h1 style="letter-spacing: 5px; color: #15803d;">${otp}</h1>
+            <p>Valid for 5 minutes only.</p>
+            <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
+            <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
+          </div>
+        `,
+      });
+    } catch (emailErr) {
+      console.log('Email send error:', emailErr.message);
     }
 
     res.json({ message: "OTP sent successfully" });
