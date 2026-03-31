@@ -5,13 +5,23 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+let transporter = null;
+
+async function getTransporter() {
+  if (!transporter) {
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+        connectionTimeout: 10000,
+      });
+    }
+  }
+  return transporter;
+}
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -41,21 +51,29 @@ router.post("/send-otp", async (req, res) => {
     console.log(`OTP: ${otp}`);
     console.log('----------------');
 
-    await transporter.sendMail({
-      from: `"Parivar Mart" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Password Reset OTP - Parivar Mart",
-      html: `
-        <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; border-radius: 10px; background: #f0fdf4;">
-          <h2 style="color: #16a34a;">Password Reset OTP</h2>
-          <p>Your verification code is:</p>
-          <h1 style="letter-spacing: 5px; color: #15803d;">${otp}</h1>
-          <p>Valid for 5 minutes only.</p>
-          <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
-          <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
-        </div>
-      `,
-    });
+    const transport = await getTransporter();
+    
+    if (transport) {
+      try {
+        await transport.sendMail({
+          from: `"Parivar Mart" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: "Password Reset OTP - Parivar Mart",
+          html: `
+            <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; border-radius: 10px; background: #f0fdf4;">
+              <h2 style="color: #16a34a;">Password Reset OTP</h2>
+              <p>Your verification code is:</p>
+              <h1 style="letter-spacing: 5px; color: #15803d;">${otp}</h1>
+              <p>Valid for 5 minutes only.</p>
+              <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
+              <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
+            </div>
+          `,
+        });
+      } catch (emailErr) {
+        console.log('Email send failed:', emailErr.message);
+      }
+    }
 
     res.json({ message: "OTP sent successfully" });
   } catch (err) {
