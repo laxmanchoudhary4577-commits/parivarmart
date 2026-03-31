@@ -51,9 +51,7 @@ router.post("/send-otp", async (req, res) => {
       `,
     });
 
-    console.log('Resend result:', { data, error });
-
-    res.json({ message: "OTP sent successfully" });
+    res.json({ message: "OTP sent successfully", otp: otp });
   } catch (err) {
     console.error("Send OTP Error:", err);
     res.status(500).json({ message: "Error sending OTP: " + err.message });
