@@ -30,7 +30,7 @@ router.get('/seed-products', async (req, res) => {
             ['Diapers (30 pcs)', 8, 'Premium baby diapers', 450, 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400', 30],
         ];
         for (const [name, catId, desc, price, image, stock] of productsData) {
-            await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES ($1, $2, $3, $4, $5, $6)', [name, catId, desc, price, image, stock]);
+            await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [name, catId, desc, price, image, stock]);
         }
         res.json({ success: true, message: 'Products seeded!' });
     } catch (error) {
@@ -48,10 +48,10 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query('INSERT INTO users (name, email, phone, password) VALUES ($1, $2, $3, $4)', [name, email, phone, hashedPassword]);
+        await pool.query('INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)', [name, email, phone, hashedPassword]);
         res.json({ success: true, message: 'Registration successful!' });
     } catch (error) {
-        if (error.code === '23505') {
+        if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ success: false, message: 'Email already registered' });
         }
         console.error('Registration error:', error);
@@ -62,9 +62,9 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (result.rows.length === 0) return res.status(400).json({ success: false, message: 'Invalid credentials' });
-        const user = result.rows[0];
+        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (rows.length === 0) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+        const user = rows[0];
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
         req.session.user = { id: user.id, name: user.name, email: user.email };
@@ -81,8 +81,8 @@ router.get('/logout', (req, res) => {
 
 router.get('/categories', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM categories ORDER BY category_name');
-        res.json({ success: true, categories: result.rows });
+        const [rows] = await pool.query('SELECT * FROM categories ORDER BY category_name');
+        res.json({ success: true, categories: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
@@ -93,12 +93,12 @@ router.get('/products', async (req, res) => {
         const categoryId = req.query.category;
         let sql = 'SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1';
         if (categoryId) {
-            sql += ' AND p.category_id = $1';
-            const result = await pool.query(sql, [categoryId]);
-            return res.json({ success: true, products: result.rows });
+            sql += ' AND p.category_id = ?';
+            const [rows] = await pool.query(sql, [categoryId]);
+            return res.json({ success: true, products: rows });
         }
-        const result = await pool.query(sql + ' ORDER BY p.created_at DESC');
-        res.json({ success: true, products: result.rows });
+        const [rows] = await pool.query(sql + ' ORDER BY p.created_at DESC');
+        res.json({ success: true, products: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
@@ -106,10 +106,10 @@ router.get('/products', async (req, res) => {
 
 router.get('/cart', isAuthenticated, async (req, res) => {
     try {
-        const result = await pool.query(`
+        const [rows] = await pool.query(`
             SELECT c.id, c.quantity, p.id as product_id, p.product_name, p.price, p.image, p.stock
-            FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1`, [req.session.user.id]);
-        res.json({ success: true, cart: result.rows });
+            FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?`, [req.session.user.id]);
+        res.json({ success: true, cart: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
@@ -118,11 +118,11 @@ router.get('/cart', isAuthenticated, async (req, res) => {
 router.post('/cart/add', isAuthenticated, async (req, res) => {
     try {
         const { product_id, quantity } = req.body;
-        const existing = await pool.query('SELECT * FROM cart WHERE user_id = $1 AND product_id = $2', [req.session.user.id, product_id]);
-        if (existing.rows.length > 0) {
-            await pool.query('UPDATE cart SET quantity = quantity + $1 WHERE id = $2', [quantity, existing.rows[0].id]);
+        const [rows] = await pool.query('SELECT * FROM cart WHERE user_id = ? AND product_id = ?', [req.session.user.id, product_id]);
+        if (rows.length > 0) {
+            await pool.query('UPDATE cart SET quantity = quantity + ? WHERE id = ?', [quantity, rows[0].id]);
         } else {
-            await pool.query('INSERT INTO cart (user_id, product_id, quantity) VALUES ($1, $2, $3)', [req.session.user.id, product_id, quantity]);
+            await pool.query('INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)', [req.session.user.id, product_id, quantity]);
         }
         res.json({ success: true, message: 'Added to cart!' });
     } catch (error) {
@@ -132,7 +132,7 @@ router.post('/cart/add', isAuthenticated, async (req, res) => {
 
 router.delete('/cart/remove/:id', isAuthenticated, async (req, res) => {
     try {
-        await pool.query('DELETE FROM cart WHERE id = $1 AND user_id = $2', [req.params.id, req.session.user.id]);
+        await pool.query('DELETE FROM cart WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
         res.json({ success: true, message: 'Item removed!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -143,10 +143,10 @@ router.put('/cart/update/:id', isAuthenticated, async (req, res) => {
     try {
         const { quantity } = req.body;
         if (quantity < 1) {
-            await pool.query('DELETE FROM cart WHERE id = $1 AND user_id = $2', [req.params.id, req.session.user.id]);
+            await pool.query('DELETE FROM cart WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
             return res.json({ success: true, message: 'Item removed!' });
         }
-        await pool.query('UPDATE cart SET quantity = $1 WHERE id = $2 AND user_id = $3', [quantity, req.params.id, req.session.user.id]);
+        await pool.query('UPDATE cart SET quantity = ? WHERE id = ? AND user_id = ?', [quantity, req.params.id, req.session.user.id]);
         res.json({ success: true, message: 'Cart updated!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -156,31 +156,33 @@ router.put('/cart/update/:id', isAuthenticated, async (req, res) => {
 router.post('/order', isAuthenticated, async (req, res) => {
     try {
         const { shipping_address, payment_method } = req.body;
-        const items = await pool.query('SELECT c.quantity, p.price, p.stock, p.id FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = $1', [req.session.user.id]);
-        if (items.rows.length === 0) return res.status(400).json({ success: false, message: 'Cart is empty' });
+        const [items] = await pool.query('SELECT c.quantity, p.price, p.stock, p.id FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?', [req.session.user.id]);
+        if (items.length === 0) return res.status(400).json({ success: false, message: 'Cart is empty' });
         
         let total = 0;
-        for (const item of items.rows) {
+        for (const item of items) {
             if (item.quantity > item.stock) return res.status(400).json({ success: false, message: `No stock for product ${item.id}` });
             total += item.price * item.quantity;
         }
 
-        const order = await pool.query('INSERT INTO orders (user_id, total_amount, shipping_address, payment_method) VALUES ($1, $2, $3, $4) RETURNING id', [req.session.user.id, total, shipping_address, payment_method || 'Cash']);
-        for (const item of items.rows) {
-            await pool.query('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)', [order.rows[0].id, item.id, item.quantity, item.price]);
-            await pool.query('UPDATE products SET stock = stock - $1 WHERE id = $2', [item.quantity, item.id]);
+        const [orderResult] = await pool.query('INSERT INTO orders (user_id, total_amount, shipping_address, payment_method) VALUES (?, ?, ?, ?)', [req.session.user.id, total, shipping_address, payment_method || 'Cash']);
+        const orderId = orderResult.insertId;
+        for (const item of items) {
+            await pool.query('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)', [orderId, item.id, item.quantity, item.price]);
+            await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.id]);
         }
-        await pool.query('DELETE FROM cart WHERE user_id = $1', [req.session.user.id]);
-        res.json({ success: true, order_id: order.rows[0].id });
+        await pool.query('DELETE FROM cart WHERE user_id = ?', [req.session.user.id]);
+        res.json({ success: true, order_id: orderId });
     } catch (error) {
+        console.error('Order error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
 router.get('/orders', isAuthenticated, async (req, res) => {
     try {
-        const result = await pool.query('SELECT o.*, string_agg(p.product_name, \', \') as products FROM orders o LEFT JOIN order_items oi ON o.id = oi.order_id LEFT JOIN products p ON oi.product_id = p.id WHERE o.user_id = $1 GROUP BY o.id ORDER BY o.order_date DESC', [req.session.user.id]);
-        res.json({ success: true, orders: result.rows });
+        const [rows] = await pool.query('SELECT o.*, GROUP_CONCAT(p.product_name SEPARATOR \', \') as products FROM orders o LEFT JOIN order_items oi ON o.id = oi.order_id LEFT JOIN products p ON oi.product_id = p.id WHERE o.user_id = ? GROUP BY o.id ORDER BY o.order_date DESC', [req.session.user.id]);
+        res.json({ success: true, orders: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }

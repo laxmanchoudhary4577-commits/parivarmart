@@ -11,8 +11,8 @@ router.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body;
 
-    const userCheck = await db.query("SELECT * FROM users WHERE email = $1", [email]);
-    if (userCheck.rows.length === 0) {
+    const [userCheck] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (userCheck.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -26,7 +26,7 @@ router.post("/send-otp", async (req, res) => {
     const expiry = Date.now() + 5 * 60 * 1000;
 
     await db.query(
-      "UPDATE users SET otp=$1, otp_expiry=$2 WHERE email=$3",
+      "UPDATE users SET otp=?, otp_expiry=? WHERE email=?",
       [otp, expiry, email]
     );
 
@@ -66,17 +66,17 @@ router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const user = await db.query(
-      "SELECT * FROM users WHERE email=$1",
+    const [rows] = await db.query(
+      "SELECT * FROM users WHERE email=?",
       [email]
     );
 
-    if (user.rows.length === 0) return res.status(400).json({ message: "User not found" });
+    if (rows.length === 0) return res.status(400).json({ message: "User not found" });
 
-    if (user.rows[0].otp !== otp)
+    if (rows[0].otp !== otp)
       return res.status(400).json({ message: "Invalid OTP" });
 
-    if (Date.now() > user.rows[0].otp_expiry)
+    if (Date.now() > rows[0].otp_expiry)
       return res.status(400).json({ message: "OTP expired" });
 
     res.json({ message: "OTP verified" });
@@ -93,7 +93,7 @@ router.post("/reset-password", async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await db.query(
-      "UPDATE users SET password=$1, otp=NULL, otp_expiry=NULL WHERE email=$2",
+      "UPDATE users SET password=?, otp=NULL, otp_expiry=NULL WHERE email=?",
       [hashedPassword, email]
     );
 
@@ -105,3 +105,4 @@ router.post("/reset-password", async (req, res) => {
 });
 
 module.exports = router;
+
