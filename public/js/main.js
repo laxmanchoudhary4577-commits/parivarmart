@@ -1,6 +1,8 @@
 async function checkSession() {
     try {
-        const res = await fetch('/api/check-session');
+        const res = await fetch('/api/check-session', { 
+            credentials: 'include' 
+        });
         const data = await res.json();
         
         if (data.loggedIn) {
@@ -18,7 +20,9 @@ async function checkSession() {
 
 async function checkAdminSession() {
     try {
-        const res = await fetch('/admin/check-session');
+        const res = await fetch('/admin/check-session', { 
+            credentials: 'include' 
+        });
         const data = await res.json();
         
         if (!data.loggedIn) {

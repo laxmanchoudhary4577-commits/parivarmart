@@ -4,6 +4,14 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 const { isAdmin } = require('../middleware/auth');
 
+router.get('/check-session', (req, res) => {
+    if (req.session.admin) {
+        res.json({ loggedIn: true, admin: req.session.admin });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -76,6 +84,45 @@ router.get('/users', isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT id, name, email, phone, created_at FROM users ORDER BY created_at DESC');
         res.json({ success: true, users: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.get('/products', isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT p.*, c.category_name 
+            FROM products p 
+            JOIN categories c ON p.category_id = c.id 
+            ORDER BY p.created_at DESC
+        `);
+        res.json({ success: true, products: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.get('/all-orders', isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT o.*, u.name as user_name, u.email as user_email, u.phone as user_phone 
+            FROM orders o 
+            JOIN users u ON o.user_id = u.id 
+            ORDER BY o.order_date DESC
+        `);
+        
+        for (let order of rows) {
+            const [items] = await pool.query(`
+                SELECT oi.*, p.product_name 
+                FROM order_items oi 
+                JOIN products p ON oi.product_id = p.id 
+                WHERE oi.order_id = ?
+            `, [order.id]);
+            order.products = items.map(item => `${item.product_name} (x${item.quantity})`).join(', ');
+        }
+        
+        res.json({ success: true, orders: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }

@@ -15,8 +15,12 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'ecommerce-secret-key-2024',
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 }
+    saveUninitialized: false,
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax'
+    }
 }));
 
 // Import Routes
