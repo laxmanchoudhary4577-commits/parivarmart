@@ -13,6 +13,7 @@ async function initDB() {
         await pool.query(`CREATE TABLE IF NOT EXISTS otp_verification (id INT AUTO_INCREMENT PRIMARY KEY, email VARCHAR(255) NOT NULL, otp VARCHAR(255) NOT NULL, expiry BIGINT NOT NULL, is_verified BOOLEAN DEFAULT FALSE, attempts INT DEFAULT 0, last_sent BIGINT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
 
         const [categoriesRes] = await pool.query('SELECT COUNT(*) as count FROM categories');
+        
         if (categoriesRes[0].count === 0) {
             const categoriesData = [
                 ['Fruits & Vegetables', 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400'],
@@ -27,9 +28,15 @@ async function initDB() {
             for (const [name, image] of categoriesData) {
                 await pool.query('INSERT INTO categories (category_name, category_image) VALUES (?, ?)', [name, image]);
             }
-
+            
+            const hashedPassword = bcrypt.hashSync('Store@2026', 10);
+            await pool.query('INSERT INTO admins (username, password) VALUES (?, ?)', ['store_admin', hashedPassword]);
+        }
+        
+        const [productsRes] = await pool.query('SELECT COUNT(*) as count FROM products');
+        if (productsRes[0].count === 0) {
             const productsData = [
-                ['Fresh Apples (1kg)', 1, 'Premium quality red apples', 120, 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400', 50],
+                ['Fresh Apples (1kg)', 1, 'Premium quality red apples from Himachal', 120, 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400', 50],
                 ['Banana (1 dozen)', 1, 'Fresh yellow bananas', 50, 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400', 100],
                 ['Milk (1L)', 2, 'Fresh toned milk', 45, 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400', 200],
                 ['Eggs (12 pcs)', 2, 'Farm fresh eggs', 60, 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400', 150],
@@ -44,18 +51,14 @@ async function initDB() {
                 ['Diapers (30 pcs)', 8, 'Premium baby diapers', 450, 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400', 30],
             ];
             for (const [name, catId, desc, price, image, stock] of productsData) {
-                await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [name, catId, desc, price, image, stock]);
+                await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)', [name, catId, desc, price, image, stock]);
             }
-
-            const hashedPassword = bcrypt.hashSync('Store@2026', 10);
-            await pool.query('INSERT INTO admins (username, password) VALUES (?, ?)', ['store_admin', hashedPassword]);
         }
+        
+        console.log('Database initialized with categories and products!');
     } catch (error) {
         console.error('initDB error:', error);
     }
 }
-
-module.exports = initDB;
-
 
 module.exports = initDB;
