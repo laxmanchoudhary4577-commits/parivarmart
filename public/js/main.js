@@ -286,43 +286,6 @@ function closeCheckoutModal() {
     document.getElementById('checkoutModal').classList.remove('active');
 }
 
-function detectLocation() {
-    if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
-        return;
-    }
-    
-    navigator.geolocation.getCurrentPosition(
-        async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                const data = await res.json();
-                
-                if (data.address) {
-                    document.getElementById('houseNo').value = data.address.house_number || '';
-                    document.getElementById('street').value = data.address.road || data.address.neighbourhood || '';
-                    document.getElementById('city').value = data.address.city || data.address.town || data.address.village || data.address.county || '';
-                    document.getElementById('state').value = data.address.state || '';
-                    document.getElementById('pincode').value = data.address.postcode || '';
-                    alert('Location detected successfully!');
-                } else {
-                    alert('Could not find address for this location');
-                }
-            } catch (error) {
-                console.error('Geocoding error:', error);
-                alert('Error getting address details');
-            }
-        },
-        (error) => {
-            alert('Unable to get location. Please enable location access or enter address manually.');
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-    );
-}
-
 document.getElementById('checkoutModal')?.addEventListener('click', function(e) {
     if (e.target === this) {
         closeCheckoutModal();
