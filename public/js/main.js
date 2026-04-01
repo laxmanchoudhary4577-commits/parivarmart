@@ -44,11 +44,14 @@ document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
 
 async function loadCategories() {
     try {
+        console.log('Loading categories...');
         const res = await fetch('/api/categories');
         const data = await res.json();
+        console.log('Categories response:', data);
         
-        if (data.success && data.categories.length > 0) {
+        if (data.success) {
             const grid = document.getElementById('categoryGrid');
+            console.log('Category grid element:', grid);
             if (grid) {
                 grid.innerHTML = data.categories.map(cat => `
                     <div class="category-card" onclick="filterByCategory(${cat.id})">
@@ -56,6 +59,7 @@ async function loadCategories() {
                         <h3>${cat.category_name}</h3>
                     </div>
                 `).join('');
+                console.log('Categories rendered');
             }
         }
     } catch (error) {
@@ -106,11 +110,14 @@ async function loadCategoriesForAdmin() {
 async function loadProducts(categoryId = null) {
     try {
         const url = categoryId ? `/api/products?category=${categoryId}` : '/api/products';
+        console.log('Loading products from:', url);
         const res = await fetch(url);
         const data = await res.json();
+        console.log('Products response:', data);
         
-        if (data.success && data.products.length > 0) {
+        if (data.success) {
             const grid = document.getElementById('productGrid');
+            console.log('Product grid element:', grid);
             if (grid) {
                 grid.innerHTML = data.products.map(product => `
                     <div class="product-card">
@@ -125,6 +132,7 @@ async function loadProducts(categoryId = null) {
                         </div>
                     </div>
                 `).join('');
+                console.log('Products rendered');
             }
         } else {
             const grid = document.getElementById('productGrid');
