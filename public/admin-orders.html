@@ -41,9 +41,7 @@
         }
         .sidebar.active { left: 0; }
         .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: block;
             padding: 12px 15px;
             color: #333;
             text-decoration: none;
@@ -65,28 +63,64 @@
         .stat-box .num { font-size: 20px; font-weight: bold; color: #ff6b35; }
         .stat-box .txt { font-size: 11px; color: #666; }
         
-        table { width: 100%; background: white; border-radius: 8px; overflow: hidden; border-collapse: collapse; }
-        th { background: #ff6b35; color: white; padding: 10px; text-align: left; font-size: 12px; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; vertical-align: top; }
-        tr:hover { background: #fafafa; }
+        .order-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
         
-        select.status-select {
-            padding: 5px;
+        .order-table th {
+            background: #ff6b35;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 12px;
+        }
+        
+        .order-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            vertical-align: top;
+        }
+        
+        .order-table tr:hover { background: #fafafa; }
+        
+        .order-info { margin-bottom: 4px; }
+        .order-info b { color: #333; }
+        
+        .addr-box {
+            background: #f9f9f9;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            max-width: 150px;
+        }
+        
+        .total {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+        
+        .status-dropdown {
+            padding: 6px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 11px;
-            background: white;
             cursor: pointer;
+            width: 100%;
         }
         
-        select.status-select.pending { background: #fff8e1; }
-        select.status-select.processing { background: #e3f2fd; }
-        select.status-select.shipped { background: #f5f5f5; }
-        select.status-select.completed { background: #e8f5e9; }
-        select.status-select.cancelled { background: #ffebee; }
+        .status-dropdown.pending { background: #fffde7; }
+        .status-dropdown.processing { background: #e3f2fd; }
+        .status-dropdown.shipped { background: #f5f5f5; }
+        .status-dropdown.completed { background: #e8f5e9; }
+        .status-dropdown.cancelled { background: #ffebee; }
         
         .empty { text-align: center; padding: 40px; color: #999; }
-        .empty i { font-size: 40px; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -141,31 +175,36 @@
                     document.getElementById('done').textContent = d;
                     
                     document.getElementById('ordersTable').innerHTML = `
-                        <table>
+                        <table class="order-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Customer</th>
-                                    <th>Address</th>
-                                    <th>Products</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
+                                    <th style="width:50px;">Order ID</th>
+                                    <th style="width:120px;">Customer</th>
+                                    <th style="width:150px;">Address</th>
+                                    <th style="width:120px;">Products</th>
+                                    <th style="width:70px;">Total</th>
+                                    <th style="width:100px;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${data.orders.map(o => `
                                     <tr>
-                                        <td><b>#${o.id}</b><br><small>${new Date(o.order_date).toLocaleDateString()}</small></td>
                                         <td>
-                                            <b>${o.user_name || 'N/A'}</b><br>
-                                            <small>${o.user_phone || ''}</small><br>
-                                            <small style="color:#888">${o.user_email || ''}</small>
+                                            <div class="order-info"><b>#${o.id}</b></div>
+                                            <div style="color:#888;font-size:11px;">${new Date(o.order_date).toLocaleDateString()}</div>
                                         </td>
-                                        <td style="max-width:150px;">${o.shipping_address || 'No address'}</td>
-                                        <td style="max-width:120px;font-size:11px;">${o.products || 'N/A'}</td>
-                                        <td><b>₹${o.total_amount}</b></td>
                                         <td>
-                                            <select class="status-select ${o.status.toLowerCase()}" onchange="updateStatus(${o.id}, this.value)">
+                                            <div class="order-info"><b>${o.user_name || 'N/A'}</b></div>
+                                            <div style="color:#666;font-size:11px;">📱 ${o.user_phone || 'N/A'}</div>
+                                            <div style="color:#888;font-size:10px;">${o.user_email || ''}</div>
+                                        </td>
+                                        <td>
+                                            <div class="addr-box">${o.shipping_address || 'No address'}</div>
+                                        </td>
+                                        <td style="font-size:11px;">${o.products || 'N/A'}</td>
+                                        <td><div class="total">₹${o.total_amount}</div></td>
+                                        <td>
+                                            <select class="status-dropdown ${o.status.toLowerCase()}" onchange="updateStatus(${o.id}, this.value)">
                                                 <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                                 <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
                                                 <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
@@ -179,7 +218,7 @@
                         </table>
                     `;
                 } else {
-                    document.getElementById('ordersTable').innerHTML = '<div class="empty"><i class="fas fa-box"></i> No orders found</div>';
+                    document.getElementById('ordersTable').innerHTML = '<div class="empty">No orders yet</div>';
                 }
             } catch (e) {
                 console.error(e);
@@ -201,7 +240,7 @@
                 });
                 
                 if (res.ok) {
-                    alert('Order updated!');
+                    alert('Status updated!');
                     loadOrders();
                 }
             } catch (e) {
