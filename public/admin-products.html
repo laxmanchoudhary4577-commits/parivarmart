@@ -126,7 +126,10 @@
     <div class="admin-content">
         <div class="admin-header">
             <h1>Products</h1>
-            <button class="btn btn-primary" onclick="openProductModal()">+ Add</button>
+            <div>
+                <button class="btn" style="background:#e5e7eb;margin-right:8px;" onclick="seedProducts()">+ Seed</button>
+                <button class="btn btn-primary" onclick="openProductModal()">+ Add</button>
+            </div>
         </div>
 
         <div id="productMessage"></div>
@@ -187,6 +190,20 @@
         checkAdminSession();
         loadAdminProducts();
         loadCategoriesForAdmin();
+
+        async function seedProducts() {
+            if (!confirm('Add sample products to database?')) return;
+            try {
+                const res = await fetch('/api/seed-products', { credentials: 'include' });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('productMessage').innerHTML = '<div style="background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:10px;">Products added!</div>';
+                    loadAdminProducts();
+                }
+            } catch (e) {
+                alert('Error seeding products');
+            }
+        }
         
         function toggleAdminMenu() {
             document.getElementById('adminMenu').classList.toggle('active');
