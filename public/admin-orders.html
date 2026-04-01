@@ -3,338 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ff6b35">
-    <title>Orders - Parivar Mart Admin</title>
+    <title>Orders - Parivar Mart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        
-        :root { --primary: #ff6b35; --white: #fff; --bg: #f5f5f5; --text: #333; --gray: #666; }
-        
-        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f0f0; }
         
         .header {
-            background: var(--primary);
+            background: #ff6b35;
             color: white;
             padding: 15px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            justify-content: space-between;
         }
-        
-        .header h1 { font-size: 17px; }
-        
+        .header h2 { font-size: 18px; }
         .menu-btn {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 36px;
-            height: 36px;
+            width: 35px;
+            height: 35px;
             border-radius: 8px;
             font-size: 16px;
-            cursor: pointer;
         }
         
-        .nav {
+        .sidebar {
             position: fixed;
-            top: 56px;
-            left: -200px;
-            width: 200px;
-            height: calc(100vh - 56px);
-            background: var(--white);
+            top: 55px;
+            left: -180px;
+            width: 180px;
+            height: 100%;
+            background: white;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            transition: left 0.3s;
-            z-index: 99;
+            transition: 0.3s;
+            z-index: 50;
         }
-        
-        .nav.active { left: 0; }
-        
-        .nav a {
+        .sidebar.active { left: 0; }
+        .sidebar a {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 13px 15px;
-            color: var(--text);
+            padding: 12px 15px;
+            color: #333;
             text-decoration: none;
             border-bottom: 1px solid #eee;
         }
+        .sidebar a:hover, .sidebar a.active { background: #fff4f1; color: #ff6b35; }
         
-        .nav a:hover, .nav a.active { background: #fff4f1; color: var(--primary); }
+        .main { padding: 10px; padding-top: 65px; }
         
-        .content { padding: 12px; padding-top: 70px; }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .stat {
-            background: var(--white);
-            padding: 12px 8px;
-            border-radius: 10px;
+        .stats { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .stat-box {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 70px;
             text-align: center;
         }
+        .stat-box .num { font-size: 20px; font-weight: bold; color: #ff6b35; }
+        .stat-box .txt { font-size: 11px; color: #666; }
         
-        .stat .num { font-size: 20px; font-weight: 800; color: var(--primary); }
-        .stat .txt { font-size: 10px; color: var(--gray); }
+        table { width: 100%; background: white; border-radius: 8px; overflow: hidden; border-collapse: collapse; }
+        th { background: #ff6b35; color: white; padding: 10px; text-align: left; font-size: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 12px; vertical-align: top; }
+        tr:hover { background: #fafafa; }
         
-        .order {
-            background: var(--white);
-            border-radius: 12px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        
-        .order-header {
-            background: var(--primary);
-            color: white;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .order-body { padding: 12px; }
-        
-        .field { margin-bottom: 8px; }
-        .field label { font-size: 10px; color: var(--gray); display: block; margin-bottom: 3px; }
-        .field div { font-size: 13px; }
-        
-        .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
-        .chip { background: #f5f5f5; padding: 4px 8px; border-radius: 5px; font-size: 11px; display: flex; align-items: center; gap: 4px; }
-        
-        .addr { background: #fafafa; padding: 8px; border-radius: 6px; font-size: 12px; border-left: 3px solid var(--primary); }
-        
-        .order-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
-        
-        .price { font-size: 18px; font-weight: 800; }
-        
-        .badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .badge.pending { background: #fff3cd; color: #856404; }
-        .badge.processing { background: #cce5ff; color: #004085; }
-        .badge.shipped { background: #e2e3e5; color: #383d41; }
-        .badge.completed { background: #d4edda; color: #155724; }
-        .badge.cancelled { background: #f8d7da; color: #721c24; }
-        
-        .btn-update {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.active { display: flex; }
-        
-        .modal-body {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 18px;
-            width: 85%;
-            max-width: 300px;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .modal-header h3 { font-size: 15px; }
-        .modal-close { background: #eee; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
-        
-        select {
-            width: 100%;
-            padding: 10px;
+        select.status-select {
+            padding: 5px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-        
-        .submit {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 11px;
+            background: white;
             cursor: pointer;
         }
         
-        .empty { text-align: center; padding: 40px; color: var(--gray); }
-        .empty i { font-size: 40px; color: #ddd; margin-bottom: 10px; }
+        select.status-select.pending { background: #fff8e1; }
+        select.status-select.processing { background: #e3f2fd; }
+        select.status-select.shipped { background: #f5f5f5; }
+        select.status-select.completed { background: #e8f5e9; }
+        select.status-select.cancelled { background: #ffebee; }
+        
+        .empty { text-align: center; padding: 40px; color: #999; }
+        .empty i { font-size: 40px; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-shopping-bag"></i> Orders</h1>
-        <button class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+        <h2>Orders</h2>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
     </div>
     
-    <div class="nav" id="nav">
-        <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
-        <a href="/admin-orders" class="active"><i class="fas fa-shopping-bag"></i> Orders</a>
-        <a href="/admin-users"><i class="fas fa-users"></i> Users</a>
-        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <div class="sidebar" id="sidebar">
+        <a href="/admin-dashboard">Dashboard</a>
+        <a href="/admin-products">Products</a>
+        <a href="/admin-orders" style="background:#fff4f1;color:#ff6b35;font-weight:600;">Orders</a>
+        <a href="/admin-users">Users</a>
+        <a href="/admin/logout">Logout</a>
     </div>
 
-    <div class="content">
+    <div class="main">
         <div class="stats">
-            <div class="stat"><div class="num" id="total">0</div><div class="txt">Total</div></div>
-            <div class="stat"><div class="num" id="pending">0</div><div class="txt">Pending</div></div>
-            <div class="stat"><div class="num" id="shipped">0</div><div class="txt">Shipped</div></div>
-            <div class="stat"><div class="num" id="done">0</div><div class="txt">Done</div></div>
+            <div class="stat-box"><div class="num" id="total">0</div><div class="txt">Total</div></div>
+            <div class="stat-box"><div class="num" id="pending">0</div><div class="txt">Pending</div></div>
+            <div class="stat-box"><div class="num" id="shipped">0</div><div class="txt">Shipped</div></div>
+            <div class="stat-box"><div class="num" id="done">0</div><div class="txt">Done</div></div>
         </div>
 
-        <div id="list"></div>
-    </div>
-
-    <div class="modal" id="modal">
-        <div class="modal-body">
-            <div class="modal-header">
-                <h3>Update Status</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <form id="form">
-                <input type="hidden" id="oid">
-                <select id="status">
-                    <option value="Pending">Pending</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-                <button type="submit" class="submit">Update</button>
-            </form>
-        </div>
+        <div id="ordersTable"></div>
     </div>
 
     <script>
         checkAdminSession();
         loadOrders();
 
-        function toggleNav() {
-            document.getElementById('nav').classList.toggle('active');
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
         async function loadOrders() {
             try {
                 const res = await fetch('/admin/all-orders', { credentials: 'include' });
                 const data = await res.json();
-                const list = document.getElementById('list');
                 
                 if (data.success && data.orders.length > 0) {
-                    let p = 0, sh = 0, c = 0;
+                    let p = 0, sh = 0, d = 0;
                     data.orders.forEach(o => {
                         if (o.status === 'Pending') p++;
                         else if (o.status === 'Shipped') sh++;
-                        else if (o.status === 'Completed') c++;
+                        else if (o.status === 'Completed') d++;
                     });
                     
                     document.getElementById('total').textContent = data.orders.length;
                     document.getElementById('pending').textContent = p;
                     document.getElementById('shipped').textContent = sh;
-                    document.getElementById('done').textContent = c;
+                    document.getElementById('done').textContent = d;
                     
-                    list.innerHTML = data.orders.map(o => `
-                        <div class="order">
-                            <div class="order-header">
-                                <span>#${o.id}</span>
-                                <span>${new Date(o.order_date).toLocaleDateString()}</span>
-                            </div>
-                            <div class="order-body">
-                                <div class="chips">
-                                    <div class="chip"><i class="fas fa-user"></i> ${o.user_name || 'N/A'}</div>
-                                    <div class="chip"><i class="fas fa-phone"></i> ${o.user_phone || 'N/A'}</div>
-                                </div>
-                                <div class="field">
-                                    <label>Address</label>
-                                    <div class="addr">${o.shipping_address || 'No address'}</div>
-                                </div>
-                                <div class="field">
-                                    <label>Products</label>
-                                    <div>${o.products || 'N/A'}</div>
-                                </div>
-                                <div class="order-footer">
-                                    <div>
-                                        <span class="badge ${o.status.toLowerCase()}">${o.status}</span>
-                                        <div class="price">₹${o.total_amount}</div>
-                                    </div>
-                                    <button class="btn-update" onclick="openModal(${o.id}, '${o.status}')">Update</button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
+                    document.getElementById('ordersTable').innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Address</th>
+                                    <th>Products</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.orders.map(o => `
+                                    <tr>
+                                        <td><b>#${o.id}</b><br><small>${new Date(o.order_date).toLocaleDateString()}</small></td>
+                                        <td>
+                                            <b>${o.user_name || 'N/A'}</b><br>
+                                            <small>${o.user_phone || ''}</small><br>
+                                            <small style="color:#888">${o.user_email || ''}</small>
+                                        </td>
+                                        <td style="max-width:150px;">${o.shipping_address || 'No address'}</td>
+                                        <td style="max-width:120px;font-size:11px;">${o.products || 'N/A'}</td>
+                                        <td><b>₹${o.total_amount}</b></td>
+                                        <td>
+                                            <select class="status-select ${o.status.toLowerCase()}" onchange="updateStatus(${o.id}, this.value)">
+                                                <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                                <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                                <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
                 } else {
-                    list.innerHTML = '<div class="empty"><i class="fas fa-inbox"></i><p>No orders</p></div>';
+                    document.getElementById('ordersTable').innerHTML = '<div class="empty"><i class="fas fa-box"></i> No orders found</div>';
                 }
             } catch (e) {
                 console.error(e);
             }
         }
 
-        function openModal(id, status) {
-            document.getElementById('modal').classList.add('active');
-            document.getElementById('oid').value = id;
-            document.getElementById('status').value = status;
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        document.getElementById('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('oid').value;
-            const status = document.getElementById('status').value;
-            
-            const res = await fetch('/admin/update-order/' + id, {
-                credentials: 'include',
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status })
-            });
-            
-            if (res.ok) {
-                closeModal();
+        async function updateStatus(orderId, status) {
+            if (!confirm('Update order #' + orderId + ' to ' + status + '?')) {
                 loadOrders();
+                return;
             }
-        });
+            
+            try {
+                const res = await fetch('/admin/update-order/' + orderId, {
+                    credentials: 'include',
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (res.ok) {
+                    alert('Order updated!');
+                    loadOrders();
+                }
+            } catch (e) {
+                alert('Error updating');
+            }
+        }
     </script>
 </body>
 </html>
