@@ -620,9 +620,6 @@ async function loadAdminProducts() {
         console.error('Load admin products error:', error);
     }
 }
-        console.error('Load admin products error:', error);
-    }
-}
 
 async function deleteProduct(productId) {
     if (!confirm('Are you sure you want to delete this product?')) {
