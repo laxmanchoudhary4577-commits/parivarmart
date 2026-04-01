@@ -5,264 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="theme-color" content="#ff6b35">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Orders - Parivar Mart</title>
+    <title>Orders - Parivar Mart Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
         
-        /* Mobile Admin Header */
-        .mobile-admin-header {
-            display: flex;
+        /* Header */
+        .header {
+            background: #ff6b35;
+            color: white;
+            padding: 15px 20px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: #ff6b35;
-            color: white;
-            padding: 12px 16px;
-            z-index: 1001;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .admin-menu-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-            padding: 4px;
-        }
-        .admin-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .admin-logout-btn {
-            color: white;
-            font-size: 20px;
-            text-decoration: none;
-            padding: 4px;
-        }
-        
-        /* Mobile Admin Menu */
-        .mobile-admin-menu {
-            display: none;
-            position: fixed;
-            top: 50px;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
-        .mobile-admin-menu.active { display: block; }
-        .mobile-admin-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .mobile-admin-menu a:hover,
-        .mobile-admin-menu a.active { background: #fff4f1; color: #ff6b35; }
-        
-        .container { padding: 60px 10px 20px; }
-        
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .stat-box {
-            background: white;
-            padding: 12px 8px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        .stat-box .count { font-size: 22px; font-weight: 700; color: #ff6b35; }
-        .stat-box .label { font-size: 10px; color: #666; margin-top: 2px; }
-        
-        .order-card {
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
-        
-        .order-head {
-            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
-            color: white;
-            padding: 10px 14px;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .order-id { font-weight: 700; font-size: 15px; }
+        .header h1 { font-size: 18px; }
+        .header-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        
+        /* Menu */
+        .menu { display: none; position: fixed; top: 55px; left: 0; right: 0; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 99; }
+        .menu.show { display: block; }
+        .menu a { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; }
+        .menu a:hover, .menu a.active { background: #fff4f1; color: #ff6b35; }
+        
+        .container { padding: 70px 15px 20px; }
+        
+        /* Stats */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat { background: white; padding: 15px 10px; border-radius: 10px; text-align: center; }
+        .stat-num { font-size: 24px; font-weight: 700; color: #ff6b35; }
+        .stat-label { font-size: 11px; color: #666; }
+        
+        /* Order Card */
+        .order-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .order-header { background: linear-gradient(135deg, #ff6b35, #ff8c5a); color: white; padding: 12px 15px; display: flex; justify-content: space-between; }
+        .order-id { font-weight: 700; }
         .order-date { font-size: 12px; opacity: 0.9; }
         
-        .order-body { padding: 12px; }
+        .order-body { padding: 15px; }
+        .section-title { font-size: 10px; color: #ff6b35; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
         
-        .info-group { margin-bottom: 10px; }
-        .info-label { font-size: 10px; color: #ff6b35; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .customer-row { display: flex; flex-wrap: wrap; gap: 6px; }
-        .info-chip {
-            background: #f5f5f5;
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-        .info-chip i { margin-right: 4px; color: #ff6b35; }
+        .customer-info { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .info-tag { background: #f5f5f5; padding: 6px 10px; border-radius: 6px; font-size: 12px; }
+        .info-tag i { color: #ff6b35; margin-right: 5px; }
         
-        .address-box {
-            background: #fafafa;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-            border-left: 3px solid #ff6b35;
-        }
+        .address-box { background: #fafafa; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; border-left: 3px solid #ff6b35; }
+        .edit-btn { background: none; border: none; color: #ff6b35; cursor: pointer; font-size: 12px; margin-left: 5px; }
         
-        .products-box {
-            background: #fafafa;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
+        .products-box { background: #fafafa; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; }
         
-        .order-foot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-top: 1px solid #f0f0f0;
-        }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-top: 1px solid #eee; }
+        .total { font-size: 20px; font-weight: 700; color: #333; }
         
-        .total-amt { font-size: 18px; font-weight: 800; color: #333; }
+        .status-dropdown { padding: 10px 15px; border: 2px solid #ff6b35; border-radius: 8px; font-size: 14px; font-weight: 600; background: white; cursor: pointer; }
         
-        .status-select {
-            padding: 8px 12px;
-            border: 2px solid #ff6b35;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            background: white;
-            cursor: pointer;
-            color: #333;
-        }
-        
-        .empty-state { text-align: center; padding: 50px 20px; color: #999; }
-        .empty-state i { font-size: 50px; color: #ddd; margin-bottom: 15px; }
+        .empty { text-align: center; padding: 50px; color: #999; }
+        .empty i { font-size: 50px; color: #ddd; margin-bottom: 15px; }
         
         @media (max-width: 480px) {
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
-            .order-foot { flex-direction: column; gap: 10px; align-items: stretch; }
-            .status-select { width: 100%; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .order-footer { flex-direction: column; gap: 10px; }
+            .status-dropdown { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <!-- Mobile Admin Header -->
-    <div class="mobile-admin-header">
-        <button class="admin-menu-btn" onclick="toggleAdminMenu()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <span class="admin-title">Orders</span>
-        <a href="/admin/logout" class="admin-logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+    <div class="header">
+        <h1>📋 Orders</h1>
+        <button class="header-btn" onclick="toggleMenu()">☰</button>
     </div>
     
-    <!-- Mobile Admin Menu -->
-    <div class="mobile-admin-menu" id="adminMenu">
-        <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
-        <a href="/admin-orders" class="active"><i class="fas fa-shopping-bag"></i> Orders</a>
-        <a href="/admin-users"><i class="fas fa-users"></i> Users</a>
-        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <div class="menu" id="adminMenu">
+        <a href="/admin-dashboard">📊 Dashboard</a>
+        <a href="/admin-products">📦 Products</a>
+        <a href="/admin-orders" class="active">📋 Orders</a>
+        <a href="/admin-users">👥 Users</a>
+        <a href="/admin/logout">🚪 Logout</a>
     </div>
 
     <div class="container">
-        <div class="stats-row">
-            <div class="stat-box"><div class="count" id="total">0</div><div class="label">Total</div></div>
-            <div class="stat-box"><div class="count" id="pending">0</div><div class="label">Pending</div></div>
-            <div class="stat-box"><div class="count" id="shipped">0</div><div class="label">Shipped</div></div>
-            <div class="stat-box"><div class="count" id="done">0</div><div class="label">Done</div></div>
+        <div class="stats">
+            <div class="stat"><div class="stat-num" id="totalOrders">0</div><div class="stat-label">Total</div></div>
+            <div class="stat"><div class="stat-num" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
+            <div class="stat"><div class="stat-num" id="shippedOrders">0</div><div class="stat-label">Shipped</div></div>
+            <div class="stat"><div class="stat-num" id="doneOrders">0</div><div class="stat-label">Done</div></div>
         </div>
 
-        <div id="ordersList"></div>
+        <div id="ordersContainer"></div>
     </div>
 
     <script>
-        function toggleAdminMenu() {
-            document.getElementById('adminMenu').classList.toggle('active');
+        function toggleMenu() {
+            document.getElementById('adminMenu').classList.toggle('show');
         }
-        
-        checkAdminSession();
-        loadOrders();
+
+        // Check admin session
+        async function checkAdmin() {
+            try {
+                const res = await fetch('/admin/check-session', { credentials: 'include' });
+                const data = await res.json();
+                if (!data.loggedIn) {
+                    window.location.href = '/admin-login';
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                window.location.href = '/admin-login';
+                return false;
+            }
+        }
 
         async function loadOrders() {
+            const isAdmin = await checkAdmin();
+            if (!isAdmin) return;
+
             try {
                 const res = await fetch('/admin/all-orders', { credentials: 'include' });
                 const data = await res.json();
                 
                 if (data.success && data.orders.length > 0) {
-                    let p = 0, sh = 0, d = 0;
+                    let pending = 0, shipped = 0, done = 0;
+                    
                     data.orders.forEach(o => {
-                        if (o.status === 'Pending') p++;
-                        else if (o.status === 'Shipped') sh++;
-                        else if (o.status === 'Completed') d++;
+                        if (o.status === 'Pending') pending++;
+                        else if (o.status === 'Shipped') shipped++;
+                        else if (o.status === 'Completed') done++;
                     });
                     
-                    document.getElementById('total').textContent = data.orders.length;
-                    document.getElementById('pending').textContent = p;
-                    document.getElementById('shipped').textContent = sh;
-                    document.getElementById('done').textContent = d;
+                    document.getElementById('totalOrders').textContent = data.orders.length;
+                    document.getElementById('pendingOrders').textContent = pending;
+                    document.getElementById('shippedOrders').textContent = shipped;
+                    document.getElementById('doneOrders').textContent = done;
                     
-                    document.getElementById('ordersList').innerHTML = data.orders.map(o => `
+                    const container = document.getElementById('ordersContainer');
+                    container.innerHTML = data.orders.map(order => `
                         <div class="order-card">
-                            <div class="order-head">
-                                <span class="order-id">#${o.id}</span>
-                                <span class="order-date">${new Date(o.order_date).toLocaleDateString()}</span>
+                            <div class="order-header">
+                                <span class="order-id">#${order.id}</span>
+                                <span class="order-date">${new Date(order.order_date).toLocaleDateString()}</span>
                             </div>
                             <div class="order-body">
-                                <div class="info-group">
-                                    <div class="info-label">Customer</div>
-                                    <div class="customer-row">
-                                        <div class="info-chip"><i class="fas fa-user"></i> ${o.user_name || 'N/A'}</div>
-                                        <div class="info-chip"><i class="fas fa-phone"></i> ${o.user_phone || 'N/A'}</div>
-                                    </div>
+                                <div class="section-title">Customer</div>
+                                <div class="customer-info">
+                                    <span class="info-tag"><i class="fas fa-user"></i> ${order.user_name || 'N/A'}</span>
+                                    <span class="info-tag"><i class="fas fa-phone"></i> ${order.user_phone || 'N/A'}</span>
                                 </div>
-                                <div class="info-group">
-                                    <div class="info-label">Address <i class="fas fa-edit" style="cursor:pointer;margin-left:5px;color:#ff6b35;" onclick="editAddress(${o.id}, '${o.shipping_address || ''}')"></i></div>
-                                    <div class="address-box">${o.shipping_address || 'No address provided'}</div>
+                                
+                                <div class="section-title">
+                                    Address 
+                                    <button class="edit-btn" onclick="editAddress(${order.id}, '${(order.shipping_address || '').replace(/'/g, "\\'")}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
                                 </div>
-                                <div class="info-group">
-                                    <div class="info-label">Products</div>
-                                    <div class="products-box">${o.products || 'N/A'}</div>
-                                </div>
+                                <div class="address-box">${order.shipping_address || 'No address provided'}</div>
+                                
+                                <div class="section-title">Products</div>
+                                <div class="products-box">${order.products || 'N/A'}</div>
                             </div>
-                            <div class="order-foot">
-                                <div class="total-amt">₹${o.total_amount}</div>
-                                <select class="status-select" onchange="updateStatus(${o.id}, this.value)">
-                                    <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                                    <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                    <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            <div class="order-footer">
+                                <div class="total">₹${order.total_amount}</div>
+                                <select class="status-dropdown" onchange="updateStatus(${order.id}, this.value)">
+                                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                                 </select>
                             </div>
                         </div>
                     `).join('');
                 } else {
-                    document.getElementById('ordersList').innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>No orders found</p></div>';
+                    document.getElementById('ordersContainer').innerHTML = '<div class="empty"><i class="fas fa-box-open"></i><p>No orders found</p></div>';
                 }
             } catch (e) {
                 console.error(e);
-                document.getElementById('ordersList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading orders</p></div>';
+                document.getElementById('ordersContainer').innerHTML = '<div class="empty"><i class="fas fa-exclamation-triangle"></i><p>Error loading orders</p></div>';
             }
         }
 
@@ -281,17 +204,19 @@
                 });
                 
                 if (res.ok) {
-                    alert('Status updated!');
+                    alert('✅ Status updated!');
                     loadOrders();
+                } else {
+                    alert('❌ Error updating status');
                 }
             } catch (e) {
-                alert('Error updating status');
+                alert('❌ Error updating status');
             }
         }
-        
+
         function editAddress(orderId, currentAddress) {
-            const newAddress = prompt('Enter new shipping address for order #' + orderId + ':', currentAddress);
-            if (newAddress === null) return;
+            const newAddress = prompt('Enter new address for order #' + orderId + ':', currentAddress);
+            if (newAddress === null || newAddress === currentAddress) return;
             
             fetch('/admin/update-order/' + orderId, {
                 credentials: 'include',
@@ -302,14 +227,16 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    alert('Address updated!');
+                    alert('✅ Address updated!');
                     loadOrders();
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('❌ Error: ' + data.message);
                 }
             })
-            .catch(e => alert('Error updating address'));
+            .catch(e => alert('❌ Error updating address'));
         }
+
+        loadOrders();
     </script>
 </body>
 </html>
