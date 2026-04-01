@@ -53,10 +53,6 @@ router.get('/seed-products', async (req, res) => {
         res.status(500).json({ success: false, message: 'Seed error: ' + error.message });
     }
 });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
 
 router.post('/register', async (req, res) => {
     try {
