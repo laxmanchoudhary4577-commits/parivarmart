@@ -69,6 +69,10 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('loginMessage');
+            const btn = e.target.querySelector('button[type="submit"]');
+            
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
 
             try {
                 const res = await fetch('/api/login', {
@@ -81,12 +85,25 @@
 
                 if (data.success) {
                     messageDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
-                    setTimeout(() => window.location.href = '/', 1000);
+                    
+                    // Verify session is set before redirect
+                    const sessionCheck = await fetch('/api/check-session', { credentials: 'include' });
+                    const sessionData = await sessionCheck.json();
+                    
+                    if (sessionData.loggedIn) {
+                        window.location.href = '/';
+                    } else {
+                        messageDiv.innerHTML = '<div class="alert alert-error">Session error. Please try again.</div>';
+                    }
                 } else {
                     messageDiv.innerHTML = '<div class="alert alert-error">' + data.message + '</div>';
+                    btn.disabled = false;
+                    btn.textContent = 'Login to Account';
                 }
             } catch (error) {
-                messageDiv.innerHTML = '<div class="alert alert-error">Server error</div>';
+                messageDiv.innerHTML = '<div class="alert alert-error">Server error. Please try again.</div>';
+                btn.disabled = false;
+                btn.textContent = 'Login to Account';
             }
         });
     </script>

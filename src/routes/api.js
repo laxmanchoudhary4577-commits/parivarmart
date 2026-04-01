@@ -75,8 +75,13 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.json({ success: true });
+    req.session.destroy((err) => {
+        if (err) {
+            return res.json({ success: false, message: 'Logout failed' });
+        }
+        res.clearCookie('sessionId');
+        res.json({ success: true });
+    });
 });
 
 router.get('/categories', async (req, res) => {

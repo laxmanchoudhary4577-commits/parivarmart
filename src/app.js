@@ -7,7 +7,9 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: true,
+    origin: function(origin, callback) {
+        callback(null, true);
+    },
     credentials: true
 }));
 
@@ -19,11 +21,13 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'ecommerce-secret-key-2024',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId',
     cookie: { 
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: 'none',
-        secure: false
+        sameSite: 'lax',
+        secure: false,
+        path: '/'
     }
 }));
 
