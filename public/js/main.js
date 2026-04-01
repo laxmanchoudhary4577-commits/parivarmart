@@ -283,6 +283,18 @@ function closeCheckoutModal() {
     document.getElementById('checkoutModal').classList.remove('active');
 }
 
+document.getElementById('checkoutModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCheckoutModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCheckoutModal();
+    }
+});
+
 function togglePaymentSection() {
     const method = document.getElementById('paymentMethod').value;
     document.getElementById('razorpaySection').style.display = method === 'Razorpay' ? 'block' : 'none';
