@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Parivar Mart - Online Shopping</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -11,11 +14,12 @@
         <div class="container">
             <nav class="navbar">
                 <a href="/" class="logo">Parivar Mart</a>
-                <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Products</a></li>
-                    <li><a href="/cart">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
-                    <li><a href="/orders">My Orders</a></li>
+                <button class="nav-toggle" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/" onclick="toggleMobileMenu()">Home</a></li>
+                    <li><a href="/products" onclick="toggleMobileMenu()">Products</a></li>
+                    <li><a href="/cart" onclick="toggleMobileMenu()">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders" onclick="toggleMobileMenu()">My Orders</a></li>
                 </ul>
                 <div class="nav-actions">
                     <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
