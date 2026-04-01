@@ -221,7 +221,7 @@
                                     </div>
                                 </div>
                                 <div class="info-group">
-                                    <div class="info-label">Address</div>
+                                    <div class="info-label">Address <i class="fas fa-edit" style="cursor:pointer;margin-left:5px;color:#ff6b35;" onclick="editAddress(${o.id}, '${o.shipping_address || ''}')"></i></div>
                                     <div class="address-box">${o.shipping_address || 'No address provided'}</div>
                                 </div>
                                 <div class="info-group">
@@ -271,6 +271,28 @@
             } catch (e) {
                 alert('Error updating status');
             }
+        }
+        
+        function editAddress(orderId, currentAddress) {
+            const newAddress = prompt('Enter new shipping address for order #' + orderId + ':', currentAddress);
+            if (newAddress === null) return;
+            
+            fetch('/admin/update-order/' + orderId, {
+                credentials: 'include',
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ shipping_address: newAddress })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Address updated!');
+                    loadOrders();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(e => alert('Error updating address'));
         }
     </script>
 </body>

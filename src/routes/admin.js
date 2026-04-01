@@ -147,4 +147,32 @@ router.get('/all-orders', isAdmin, async (req, res) => {
     }
 });
 
+router.put('/update-order/:id', isAdmin, async (req, res) => {
+    try {
+        const { status, shipping_address } = req.body;
+        let query = 'UPDATE orders SET ';
+        let params = [];
+        
+        if (status !== undefined) {
+            query += 'status = ?';
+            params.push(status);
+        }
+        
+        if (shipping_address !== undefined) {
+            if (params.length > 0) query += ', ';
+            query += 'shipping_address = ?';
+            params.push(shipping_address);
+        }
+        
+        query += ' WHERE id = ?';
+        params.push(req.params.id);
+        
+        await pool.query(query, params);
+        res.json({ success: true, message: 'Order updated!' });
+    } catch (error) {
+        console.error('Update order error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 module.exports = router;
