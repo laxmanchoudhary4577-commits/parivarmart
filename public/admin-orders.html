@@ -2,159 +2,191 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Orders - Parivar Mart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f0f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
         
-        .header {
+        .topbar {
             background: #ff6b35;
             color: white;
-            padding: 15px;
+            padding: 12px 15px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
         }
-        .header h2 { font-size: 18px; }
-        .menu-btn {
+        .topbar h1 { font-size: 17px; font-weight: 600; }
+        .hamburger {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 18px;
+            cursor: pointer;
         }
         
         .sidebar {
             position: fixed;
-            top: 55px;
-            left: -180px;
-            width: 180px;
-            height: 100%;
+            top: 50px;
+            left: -200px;
+            width: 200px;
+            height: calc(100% - 50px);
             background: white;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.15);
             transition: 0.3s;
-            z-index: 50;
+            z-index: 99;
         }
-        .sidebar.active { left: 0; }
+        .sidebar.open { left: 0; }
         .sidebar a {
-            display: block;
-            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
             color: #333;
             text-decoration: none;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .sidebar a:hover, .sidebar a.active { background: #fff4f1; color: #ff6b35; }
+        .sidebar a:hover { background: #f9f9f9; }
+        .sidebar a.active { background: #fff4f1; color: #ff6b35; font-weight: 600; }
         
-        .main { padding: 10px; padding-top: 65px; }
+        .container { padding: 60px 10px 20px; }
         
-        .stats { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
         .stat-box {
             background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 70px;
+            padding: 12px 8px;
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
-        .stat-box .num { font-size: 20px; font-weight: bold; color: #ff6b35; }
-        .stat-box .txt { font-size: 11px; color: #666; }
+        .stat-box .count { font-size: 22px; font-weight: 700; color: #ff6b35; }
+        .stat-box .label { font-size: 10px; color: #666; margin-top: 2px; }
         
-        .order-table {
-            width: 100%;
+        .order-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             overflow: hidden;
-            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-        .order-table th {
-            background: #ff6b35;
+        .order-head {
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
             color: white;
-            padding: 12px 8px;
-            text-align: left;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .order-id { font-weight: 700; font-size: 15px; }
+        .order-date { font-size: 12px; opacity: 0.9; }
+        
+        .order-body { padding: 12px; }
+        
+        .info-group { margin-bottom: 10px; }
+        .info-label { font-size: 10px; color: #ff6b35; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .customer-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .info-chip {
+            background: #f5f5f5;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .info-chip i { margin-right: 4px; color: #ff6b35; }
+        
+        .address-box {
+            background: #fafafa;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            border-left: 3px solid #ff6b35;
+        }
+        
+        .products-box {
+            background: #fafafa;
+            padding: 8px 10px;
+            border-radius: 8px;
             font-size: 12px;
         }
         
-        .order-table td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #eee;
+        .order-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .total-amt { font-size: 18px; font-weight: 800; color: #333; }
+        
+        .status-select {
+            padding: 8px 12px;
+            border: 2px solid #ff6b35;
+            border-radius: 8px;
             font-size: 12px;
-            vertical-align: top;
-        }
-        
-        .order-table tr:hover { background: #fafafa; }
-        
-        .order-info { margin-bottom: 4px; }
-        .order-info b { color: #333; }
-        
-        .addr-box {
-            background: #f9f9f9;
-            padding: 6px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            max-width: 150px;
-        }
-        
-        .total {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ff6b35;
-        }
-        
-        .status-dropdown {
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 11px;
+            font-weight: 600;
+            background: white;
             cursor: pointer;
-            width: 100%;
+            color: #333;
         }
         
-        .status-dropdown.pending { background: #fffde7; }
-        .status-dropdown.processing { background: #e3f2fd; }
-        .status-dropdown.shipped { background: #f5f5f5; }
-        .status-dropdown.completed { background: #e8f5e9; }
-        .status-dropdown.cancelled { background: #ffebee; }
+        .empty-state { text-align: center; padding: 50px 20px; color: #999; }
+        .empty-state i { font-size: 50px; color: #ddd; margin-bottom: 15px; }
         
-        .empty { text-align: center; padding: 40px; color: #999; }
+        @media (max-width: 480px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .order-foot { flex-direction: column; gap: 10px; align-items: stretch; }
+            .status-select { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>Orders</h2>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="topbar">
+        <h1><i class="fas fa-shopping-bag"></i> Orders</h1>
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
     </div>
     
     <div class="sidebar" id="sidebar">
-        <a href="/admin-dashboard">Dashboard</a>
-        <a href="/admin-products">Products</a>
-        <a href="/admin-orders" style="background:#fff4f1;color:#ff6b35;font-weight:600;">Orders</a>
-        <a href="/admin-users">Users</a>
-        <a href="/admin/logout">Logout</a>
+        <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
+        <a href="/admin-orders" class="active"><i class="fas fa-shopping-bag"></i> Orders</a>
+        <a href="/admin-users"><i class="fas fa-users"></i> Users</a>
+        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
-    <div class="main">
-        <div class="stats">
-            <div class="stat-box"><div class="num" id="total">0</div><div class="txt">Total</div></div>
-            <div class="stat-box"><div class="num" id="pending">0</div><div class="txt">Pending</div></div>
-            <div class="stat-box"><div class="num" id="shipped">0</div><div class="txt">Shipped</div></div>
-            <div class="stat-box"><div class="num" id="done">0</div><div class="txt">Done</div></div>
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-box"><div class="count" id="total">0</div><div class="label">Total</div></div>
+            <div class="stat-box"><div class="count" id="pending">0</div><div class="label">Pending</div></div>
+            <div class="stat-box"><div class="count" id="shipped">0</div><div class="label">Shipped</div></div>
+            <div class="stat-box"><div class="count" id="done">0</div><div class="label">Done</div></div>
         </div>
 
-        <div id="ordersTable"></div>
+        <div id="ordersList"></div>
     </div>
 
     <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
         checkAdminSession();
         loadOrders();
-
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
 
         async function loadOrders() {
             try {
@@ -174,54 +206,47 @@
                     document.getElementById('shipped').textContent = sh;
                     document.getElementById('done').textContent = d;
                     
-                    document.getElementById('ordersTable').innerHTML = `
-                        <table class="order-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:50px;">Order ID</th>
-                                    <th style="width:120px;">Customer</th>
-                                    <th style="width:150px;">Address</th>
-                                    <th style="width:120px;">Products</th>
-                                    <th style="width:70px;">Total</th>
-                                    <th style="width:100px;">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${data.orders.map(o => `
-                                    <tr>
-                                        <td>
-                                            <div class="order-info"><b>#${o.id}</b></div>
-                                            <div style="color:#888;font-size:11px;">${new Date(o.order_date).toLocaleDateString()}</div>
-                                        </td>
-                                        <td>
-                                            <div class="order-info"><b>${o.user_name || 'N/A'}</b></div>
-                                            <div style="color:#666;font-size:11px;">📱 ${o.user_phone || 'N/A'}</div>
-                                            <div style="color:#888;font-size:10px;">${o.user_email || ''}</div>
-                                        </td>
-                                        <td>
-                                            <div class="addr-box">${o.shipping_address || 'No address'}</div>
-                                        </td>
-                                        <td style="font-size:11px;">${o.products || 'N/A'}</td>
-                                        <td><div class="total">₹${o.total_amount}</div></td>
-                                        <td>
-                                            <select class="status-dropdown ${o.status.toLowerCase()}" onchange="updateStatus(${o.id}, this.value)">
-                                                <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                                                <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                                <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                                <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    document.getElementById('ordersList').innerHTML = data.orders.map(o => `
+                        <div class="order-card">
+                            <div class="order-head">
+                                <span class="order-id">#${o.id}</span>
+                                <span class="order-date">${new Date(o.order_date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="order-body">
+                                <div class="info-group">
+                                    <div class="info-label">Customer</div>
+                                    <div class="customer-row">
+                                        <div class="info-chip"><i class="fas fa-user"></i> ${o.user_name || 'N/A'}</div>
+                                        <div class="info-chip"><i class="fas fa-phone"></i> ${o.user_phone || 'N/A'}</div>
+                                    </div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Address</div>
+                                    <div class="address-box">${o.shipping_address || 'No address provided'}</div>
+                                </div>
+                                <div class="info-group">
+                                    <div class="info-label">Products</div>
+                                    <div class="products-box">${o.products || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div class="order-foot">
+                                <div class="total-amt">₹${o.total_amount}</div>
+                                <select class="status-select" onchange="updateStatus(${o.id}, this.value)">
+                                    <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                    `).join('');
                 } else {
-                    document.getElementById('ordersTable').innerHTML = '<div class="empty">No orders yet</div>';
+                    document.getElementById('ordersList').innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>No orders found</p></div>';
                 }
             } catch (e) {
                 console.error(e);
+                document.getElementById('ordersList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading orders</p></div>';
             }
         }
 
@@ -244,7 +269,7 @@
                     loadOrders();
                 }
             } catch (e) {
-                alert('Error updating');
+                alert('Error updating status');
             }
         }
     </script>
