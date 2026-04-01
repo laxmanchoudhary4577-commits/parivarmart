@@ -9,12 +9,106 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .admin-sidebar { display: none; }
-        .admin-content { margin-left: 0; padding: 16px; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        .admin-sidebar { display: none !important; }
+        .admin-content { margin: 0 !important; padding: 60px 12px 20px !important; width: 100% !important; }
+        
+        .mobile-admin-header {
+            display: flex !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff6b35;
+            color: white;
+            padding: 12px 16px;
+            z-index: 1001;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .admin-menu-btn { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px; }
+        .admin-title { font-size: 16px; font-weight: 600; }
+        
+        .mobile-admin-menu {
+            display: none;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        .mobile-admin-menu.active { display: block; }
+        .mobile-admin-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .mobile-admin-menu a:hover, .mobile-admin-menu a.active { background: #fff4f1; color: #ff6b35; }
+        .mobile-admin-menu a i { width: 20px; text-align: center; }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .admin-header h1 { font-size: 18px; margin: 0; color: #333; }
+        
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: #ff6b35; color: white; }
+        
+        .data-table { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-size: 12px; }
+        .data-table th, .data-table td { padding: 10px 6px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
+        .data-table th { background: #f9fafb; font-weight: 600; font-size: 10px; color: #666; }
+        .data-table img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h3 { margin: 0; font-size: 18px; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+        
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
     </style>
 </head>
 <body>
-    <!-- Mobile Admin Header -->
     <div class="mobile-admin-header">
         <button class="admin-menu-btn" onclick="toggleAdminMenu()"><i class="fas fa-bars"></i></button>
         <span class="admin-title">Products</span>
@@ -31,26 +125,23 @@
 
     <div class="admin-content">
         <div class="admin-header">
-            <h1>Manage Products</h1>
-            <button class="btn btn-primary" onclick="openProductModal()">Add New Product</button>
+            <h1>Products</h1>
+            <button class="btn btn-primary" onclick="openProductModal()">+ Add</button>
         </div>
 
         <div id="productMessage"></div>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Image</th>
+                    <th>#</th>
+                    <th>Img</th>
                     <th>Name</th>
-                    <th>Category</th>
+                    <th>Cat</th>
                     <th>Price</th>
                     <th>Stock</th>
-                    <th>Status</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="productTableBody">
-            </tbody>
+            <tbody id="productTableBody"></tbody>
         </table>
     </div>
 
@@ -68,12 +159,11 @@
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select id="productCategory" required>
-                    </select>
+                    <select id="productCategory" required></select>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="productDescription" rows="3"></textarea>
+                    <textarea id="productDescription" rows="2"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Price (₹)</label>
@@ -85,9 +175,9 @@
                 </div>
                 <div class="form-group">
                     <label>Image URL</label>
-                    <input type="text" id="productImage" placeholder="product.jpg">
+                    <input type="text" id="productImage" placeholder="https://...">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+                <button type="submit" class="btn btn-primary btn-block">Save</button>
             </form>
         </div>
     </div>
@@ -98,11 +188,9 @@
         loadAdminProducts();
         loadCategoriesForAdmin();
         
-        document.getElementById('adminLogout').addEventListener('click', async (e) => {
-            e.preventDefault();
-            await fetch('/admin/logout');
-            window.location.href = '/admin-login';
-        });
+        function toggleAdminMenu() {
+            document.getElementById('adminMenu').classList.toggle('active');
+        }
 
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -120,6 +208,7 @@
             const method = productId ? 'PUT' : 'POST';
 
             const res = await fetch(url, {
+                credentials: 'include',
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -127,11 +216,11 @@
             const result = await res.json();
 
             if (result.success) {
-                document.getElementById('productMessage').innerHTML = '<div class="alert alert-success">' + result.message + '</div>';
+                document.getElementById('productMessage').innerHTML = '<div style="background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:10px;">' + result.message + '</div>';
                 closeProductModal();
                 loadAdminProducts();
             } else {
-                document.getElementById('productMessage').innerHTML = '<div class="alert alert-error">' + result.message + '</div>';
+                document.getElementById('productMessage').innerHTML = '<div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:8px;margin-bottom:10px;">' + result.message + '</div>';
             }
         });
 
@@ -157,14 +246,8 @@
             document.getElementById('productModal').classList.remove('active');
         }
 
-        function toggleAdminMenu() {
-            document.getElementById('adminMenu').classList.toggle('active');
-        }
-
         document.getElementById('productModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProductModal();
-            }
+            if (e.target === this) closeProductModal();
         });
     </script>
 </body>

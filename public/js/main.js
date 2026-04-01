@@ -585,7 +585,7 @@ async function loadRecentOrders() {
 
 async function loadAdminProducts() {
     try {
-        const res = await fetch('/admin/products');
+        const res = await fetch('/admin/products', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
@@ -593,20 +593,18 @@ async function loadAdminProducts() {
             tbody.innerHTML = data.products.map(product => `
                 <tr>
                     <td>${product.id}</td>
-                    <td><img src="${product.image || 'https://via.placeholder.com/50'}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                    <td><img src="${product.image || 'https://via.placeholder.com/50'}"></td>
                     <td>${product.product_name}</td>
                     <td>${product.category_name}</td>
                     <td>₹${product.price}</td>
                     <td>${product.stock}</td>
-                    <td>${product.is_active ? 'Active' : 'Inactive'}</td>
-                    <td>
-                        <button class="btn btn-secondary" onclick='openProductModal(${JSON.stringify(product)})'>Edit</button>
-                        <button class="btn btn-outline" onclick="deleteProduct(${product.id})">Delete</button>
-                    </td>
                 </tr>
             `).join('');
         }
     } catch (error) {
+        console.error('Load admin products error:', error);
+    }
+}
         console.error('Load admin products error:', error);
     }
 }
@@ -634,7 +632,7 @@ async function deleteProduct(productId) {
 
 async function loadAdminOrders() {
     try {
-        const res = await fetch('/admin/all-orders');
+        const res = await fetch('/admin/all-orders', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
@@ -642,16 +640,9 @@ async function loadAdminOrders() {
             tbody.innerHTML = data.orders.map(order => `
                 <tr>
                     <td>#${order.id}</td>
-                    <td>${new Date(order.order_date).toLocaleString()}</td>
-                    <td>${order.user_name}<br><small>${order.user_email}</small><br><small>${order.user_phone}</small></td>
-                    <td>${order.shipping_address || 'N/A'}</td>
-                    <td>${order.products || 'N/A'}</td>
+                    <td>${new Date(order.order_date).toLocaleDateString()}</td>
                     <td>₹${order.total_amount}</td>
-                    <td>${order.payment_method}</td>
                     <td><span class="order-status ${order.status.toLowerCase()}">${order.status}</span></td>
-                    <td>
-                        <button class="btn btn-secondary" onclick="openStatusModal(${order.id}, '${order.status}')">Update</button>
-                    </td>
                 </tr>
             `).join('');
         }
@@ -662,7 +653,7 @@ async function loadAdminOrders() {
 
 async function loadAdminUsers() {
     try {
-        const res = await fetch('/admin/users');
+        const res = await fetch('/admin/users', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
@@ -673,7 +664,6 @@ async function loadAdminUsers() {
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.phone}</td>
-                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
                 </tr>
             `).join('');
         }

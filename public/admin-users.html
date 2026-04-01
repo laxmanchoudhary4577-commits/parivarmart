@@ -9,8 +9,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .admin-sidebar { display: none; }
-        .admin-content { margin-left: 0; padding: 16px; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .admin-sidebar { display: none !important; }
+        .admin-content { margin: 0 !important; padding: 60px 12px 20px !important; width: 100% !important; }
+        
+        .mobile-admin-header {
+            display: flex !important;
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #ff6b35; color: white;
+            padding: 12px 16px; z-index: 1001;
+            justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
+        .admin-menu-btn { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px; }
+        .admin-title { font-size: 16px; font-weight: 600; }
+        
+        .mobile-admin-menu { display: none; position: fixed; top: 50px; left: 0; right: 0; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; }
+        .mobile-admin-menu.active { display: block; }
+        .mobile-admin-menu a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #333; text-decoration: none; font-size: 15px; border-bottom: 1px solid #f0f0f0; }
+        .mobile-admin-menu a:hover, .mobile-admin-menu a.active { background: #fff4f1; color: #ff6b35; }
+        .mobile-admin-menu a i { width: 20px; text-align: center; }
+        
+        .admin-header { margin-bottom: 16px; }
+        .admin-header h1 { font-size: 18px; margin: 0; color: #333; }
+        
+        .data-table { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-size: 12px; }
+        .data-table th, .data-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        .data-table th { background: #f9fafb; font-weight: 600; font-size: 12px; color: #666; }
     </style>
 </head>
 <body>
@@ -30,21 +54,19 @@
 
     <div class="admin-content">
         <div class="admin-header">
-            <h1>Manage Users</h1>
+            <h1>Users</h1>
         </div>
 
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Joined</th>
                 </tr>
             </thead>
-            <tbody id="userTableBody">
-            </tbody>
+            <tbody id="userTableBody"></tbody>
         </table>
     </div>
 
@@ -57,7 +79,7 @@
             document.getElementById('adminMenu').classList.toggle('active');
         }
 
-        document.getElementById('adminLogout').addEventListener('click', async (e) => {
+        document.getElementById('adminLogout')?.addEventListener('click', async (e) => {
             e.preventDefault();
             await fetch('/admin/logout', { credentials: 'include' });
             window.location.href = '/admin-login';
