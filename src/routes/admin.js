@@ -134,10 +134,15 @@ router.get('/all-orders', isAdmin, async (req, res) => {
                 WHERE oi.order_id = ?
             `, [order.id]);
             order.products = items.map(item => `${item.product_name} (x${item.quantity})`).join(', ');
+            
+            if (!order.shipping_address) {
+                order.shipping_address = 'No address on file';
+            }
         }
         
         res.json({ success: true, orders: rows });
     } catch (error) {
+        console.error('All orders error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
