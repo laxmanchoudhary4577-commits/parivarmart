@@ -44,17 +44,19 @@ document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
 
 async function loadCategories() {
     try {
-        const res = await fetch('/api/categories', { credentials: 'include' });
+        const res = await fetch('/api/categories');
         const data = await res.json();
         
-        if (data.success) {
+        if (data.success && data.categories.length > 0) {
             const grid = document.getElementById('categoryGrid');
-            grid.innerHTML = data.categories.map(cat => `
-                <div class="category-card" onclick="filterByCategory(${cat.id})">
-                    <img src="${cat.category_image || 'https://via.placeholder.com/200'}" alt="${cat.category_name}">
-                    <h3>${cat.category_name}</h3>
-                </div>
-            `).join('');
+            if (grid) {
+                grid.innerHTML = data.categories.map(cat => `
+                    <div class="category-card" onclick="filterByCategory(${cat.id})">
+                        <img src="${cat.category_image || 'https://via.placeholder.com/200'}" alt="${cat.category_name}">
+                        <h3>${cat.category_name}</h3>
+                    </div>
+                `).join('');
+            }
         }
     } catch (error) {
         console.error('Load categories error:', error);
@@ -63,17 +65,19 @@ async function loadCategories() {
 
 async function loadCategoriesForFilter() {
     try {
-        const res = await fetch('/api/categories', { credentials: 'include' });
+        const res = await fetch('/api/categories');
         const data = await res.json();
         
-        if (data.success) {
+        if (data.success && data.categories) {
             const filter = document.getElementById('categoryFilter');
-            data.categories.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.id;
-                option.textContent = cat.category_name;
-                filter.appendChild(option);
-            });
+            if (filter) {
+                data.categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.category_name;
+                    filter.appendChild(option);
+                });
+            }
         }
     } catch (error) {
         console.error('Load categories error:', error);
@@ -102,10 +106,10 @@ async function loadCategoriesForAdmin() {
 async function loadProducts(categoryId = null) {
     try {
         const url = categoryId ? `/api/products?category=${categoryId}` : '/api/products';
-        const res = await fetch(url, { credentials: 'include' });
+        const res = await fetch(url);
         const data = await res.json();
         
-        if (data.success) {
+        if (data.success && data.products.length > 0) {
             const grid = document.getElementById('productGrid');
             if (grid) {
                 grid.innerHTML = data.products.map(product => `
@@ -122,6 +126,9 @@ async function loadProducts(categoryId = null) {
                     </div>
                 `).join('');
             }
+        } else {
+            const grid = document.getElementById('productGrid');
+            if (grid) grid.innerHTML = '<p style="text-align:center;padding:20px;">No products found</p>';
         }
     } catch (error) {
         console.error('Load products error:', error);
