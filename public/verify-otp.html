@@ -69,6 +69,8 @@
         const email = urlParams.get('email') || '';
         document.getElementById('userEmail').textContent = email;
         
+        console.log('Email from URL:', email);
+        
         const inputs = document.querySelectorAll('.otp-input');
         inputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
@@ -92,6 +94,8 @@
                 return;
             }
             
+            console.log('Verifying OTP for:', email, 'OTP:', otp);
+            
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span>Verifying...';
@@ -103,7 +107,9 @@
                     body: JSON.stringify({ email, otp })
                 });
                 
+                console.log('Verify response:', res.status);
                 const data = await res.json();
+                console.log('Verify data:', data);
                 
                 if (res.ok) {
                     showMessage('✅ OTP verified! Redirecting...', 'success');
@@ -112,6 +118,7 @@
                     showMessage('❌ ' + data.message, 'error');
                 }
             } catch (err) {
+                console.error('Error:', err);
                 showMessage('❌ Error verifying OTP', 'error');
             }
             
@@ -120,14 +127,18 @@
         });
         
         async function resendOTP() {
+            console.log('Resending OTP to:', email);
             try {
-                await fetch('/api/send-otp', {
+                const res = await fetch('/api/send-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
+                const data = await res.json();
+                console.log('Resend response:', data);
                 showMessage('✅ OTP resent!', 'success');
             } catch (err) {
+                console.error('Error:', err);
                 showMessage('❌ Error resending OTP', 'error');
             }
         }
