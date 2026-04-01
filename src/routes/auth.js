@@ -3,9 +3,15 @@ const router = express.Router();
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
+const nodemailer = require("nodemailer");
 
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 router.post("/send-otp", async (req, res) => {
   try {
@@ -36,8 +42,8 @@ router.post("/send-otp", async (req, res) => {
     console.log('----------------');
 
     try {
-      await resend.emails.send({
-        from: 'Parivar Mart <onboarding@resend.dev>',
+      await transporter.sendMail({
+        from: `Parivar Mart <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Password Reset OTP - Parivar Mart",
         html: `
@@ -49,7 +55,7 @@ router.post("/send-otp", async (req, res) => {
             <hr style="border: 0.5px solid #dcfce7; margin: 20px 0;">
             <p style="font-size: 12px; color: #64748b;">If you didn't request this, please ignore this email.</p>
           </div>
-        `,
+        `
       });
     } catch (emailErr) {
       console.log('Email send error:', emailErr.message);
