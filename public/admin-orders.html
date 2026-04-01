@@ -2,183 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="theme-color" content="#22c55e">
-    <title>Manage Orders - Parivar Mart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ff6b35">
+    <title>Orders - Parivar Mart Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         
-        :root {
-            --primary: #22c55e;
-            --primary-dark: #16a34a;
-            --white: #ffffff;
-            --bg: #f5f5f5;
-            --text: #1f2937;
-            --gray: #6b7280;
-            --border: #e5e7eb;
-        }
+        :root { --primary: #ff6b35; --white: #fff; --bg: #f5f5f5; --text: #333; --gray: #666; }
         
         body { background: var(--bg); color: var(--text); min-height: 100vh; }
         
-        .topbar {
+        .header {
             background: var(--primary);
             color: white;
-            padding: 16px;
+            padding: 15px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
         }
         
-        .topbar h1 { font-size: 18px; font-weight: 700; }
+        .header h1 { font-size: 17px; }
         
         .menu-btn {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            font-size: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            font-size: 16px;
             cursor: pointer;
         }
         
-        .sidebar {
+        .nav {
             position: fixed;
-            top: 68px;
-            left: -260px;
-            width: 260px;
-            height: calc(100vh - 68px);
+            top: 56px;
+            left: -200px;
+            width: 200px;
+            height: calc(100vh - 56px);
             background: var(--white);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 99;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             transition: left 0.3s;
-            overflow-y: auto;
+            z-index: 99;
         }
         
-        .sidebar.active { left: 0; }
+        .nav.active { left: 0; }
         
-        .sidebar a {
+        .nav a {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
+            gap: 10px;
+            padding: 13px 15px;
             color: var(--text);
             text-decoration: none;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #eee;
         }
         
-        .sidebar a:hover, .sidebar a.active { background: #ecfdf5; color: var(--primary); }
-        .sidebar a i { width: 20px; }
+        .nav a:hover, .nav a.active { background: #fff4f1; color: var(--primary); }
         
-        .main { padding: 16px; padding-top: 80px; }
+        .content { padding: 12px; padding-top: 70px; }
         
-        .stats-row {
+        .stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
-        .stat-box {
+        .stat {
             background: var(--white);
-            padding: 14px 8px;
-            border-radius: 12px;
+            padding: 12px 8px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-        .stat-box .num { font-size: 22px; font-weight: 800; color: var(--primary); }
-        .stat-box .txt { font-size: 10px; color: var(--gray); margin-top: 2px; }
+        .stat .num { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .stat .txt { font-size: 10px; color: var(--gray); }
         
-        .order-item {
+        .order {
             background: var(--white);
             border-radius: 12px;
             margin-bottom: 12px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-        .order-top {
+        .order-header {
             background: var(--primary);
             color: white;
-            padding: 12px 16px;
+            padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             font-weight: 600;
+            font-size: 14px;
         }
         
-        .order-body { padding: 14px; }
+        .order-body { padding: 12px; }
         
-        .info-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
+        .field { margin-bottom: 8px; }
+        .field label { font-size: 10px; color: var(--gray); display: block; margin-bottom: 3px; }
+        .field div { font-size: 13px; }
         
-        .info-chip {
-            background: #f3f4f6;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+        .chip { background: #f5f5f5; padding: 4px 8px; border-radius: 5px; font-size: 11px; display: flex; align-items: center; gap: 4px; }
         
-        .info-chip i { color: var(--primary); font-size: 11px; }
+        .addr { background: #fafafa; padding: 8px; border-radius: 6px; font-size: 12px; border-left: 3px solid var(--primary); }
         
-        .addr-box {
-            background: #f9fafb;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 10px;
-            border-left: 3px solid var(--primary);
-        }
-        
-        .prod-box {
-            background: #f9fafb;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        
-        .order-bottom {
+        .order-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            border-top: 1px solid #eee;
         }
         
-        .total { font-size: 18px; font-weight: 800; }
+        .price { font-size: 18px; font-weight: 800; }
         
-        .status {
-            padding: 5px 12px;
-            border-radius: 15px;
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
         }
         
-        .status.pending { background: #fef3c7; color: #92400e; }
-        .status.processing { background: #dbeafe; color: #1e40af; }
-        .status.shipped { background: #e5e7eb; color: #374151; }
-        .status.completed { background: #d1fae5; color: #065f46; }
-        .status.cancelled { background: #fee2e2; color: #991b1b; }
+        .badge.pending { background: #fff3cd; color: #856404; }
+        .badge.processing { background: #cce5ff; color: #004085; }
+        .badge.shipped { background: #e2e3e5; color: #383d41; }
+        .badge.completed { background: #d4edda; color: #155724; }
+        .badge.cancelled { background: #f8d7da; color: #721c24; }
         
-        .update-btn {
+        .btn-update {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -195,156 +157,145 @@
         
         .modal.active { display: flex; }
         
-        .modal-box {
+        .modal-body {
             background: var(--white);
-            border-radius: 16px;
-            padding: 20px;
-            width: 90%;
-            max-width: 320px;
+            border-radius: 12px;
+            padding: 18px;
+            width: 85%;
+            max-width: 300px;
         }
         
-        .modal-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
+        .modal-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-bottom: 15px;
         }
         
-        .close-btn {
-            background: #f3f4f6;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
+        .modal-header h3 { font-size: 15px; }
+        .modal-close { background: #eee; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
         
         select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             font-size: 14px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         
-        .submit-btn {
+        .submit {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
         }
         
-        .empty {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray);
-        }
-        
-        .empty i { font-size: 40px; margin-bottom: 10px; color: #d1d5db; }
-        
-        @media (max-width: 480px) {
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
-        }
+        .empty { text-align: center; padding: 40px; color: var(--gray); }
+        .empty i { font-size: 40px; color: #ddd; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <h1><i class="fas fa-box"></i> Orders</h1>
-        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    <div class="header">
+        <h1><i class="fas fa-shopping-bag"></i> Orders</h1>
+        <button class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
     </div>
     
-    <div class="sidebar" id="sidebar">
-        <a href="/admin-dashboard"><i class="fas fa-home"></i> Dashboard</a>
+    <div class="nav" id="nav">
+        <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
         <a href="/admin-orders" class="active"><i class="fas fa-shopping-bag"></i> Orders</a>
         <a href="/admin-users"><i class="fas fa-users"></i> Users</a>
         <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
-    <div class="main">
-        <div class="stats-row">
-            <div class="stat-box"><div class="num" id="totalCount">0</div><div class="txt">Total</div></div>
-            <div class="stat-box"><div class="num" style="color:#f59e0b" id="pendingCount">0</div><div class="txt">Pending</div></div>
-            <div class="stat-box"><div class="num" style="color:#3b82f6" id="shippedCount">0</div><div class="txt">Shipped</div></div>
-            <div class="stat-box"><div class="num" style="color:#10b981" id="completedCount">0</div><div class="txt">Done</div></div>
+    <div class="content">
+        <div class="stats">
+            <div class="stat"><div class="num" id="total">0</div><div class="txt">Total</div></div>
+            <div class="stat"><div class="num" id="pending">0</div><div class="txt">Pending</div></div>
+            <div class="stat"><div class="num" id="shipped">0</div><div class="txt">Shipped</div></div>
+            <div class="stat"><div class="num" id="done">0</div><div class="txt">Done</div></div>
         </div>
 
-        <div id="ordersList"></div>
+        <div id="list"></div>
     </div>
 
-    <div class="modal" id="statusModal">
-        <div class="modal-box">
-            <div class="modal-title">
-                Update Status
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+    <div class="modal" id="modal">
+        <div class="modal-body">
+            <div class="modal-header">
+                <h3>Update Status</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-            <form id="statusForm">
-                <input type="hidden" id="orderId">
-                <select id="orderStatus">
-                    <option value="Pending">⏳ Pending</option>
-                    <option value="Processing">📦 Processing</option>
-                    <option value="Shipped">🚚 Shipped</option>
-                    <option value="Completed">✅ Completed</option>
-                    <option value="Cancelled">❌ Cancelled</option>
+            <form id="form">
+                <input type="hidden" id="oid">
+                <select id="status">
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
                 </select>
-                <button type="submit" class="submit-btn">Update Now</button>
+                <button type="submit" class="submit">Update</button>
             </form>
         </div>
     </div>
 
     <script>
         checkAdminSession();
-        loadAdminOrders();
+        loadOrders();
 
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
+        function toggleNav() {
+            document.getElementById('nav').classList.toggle('active');
         }
 
-        async function loadAdminOrders() {
+        async function loadOrders() {
             try {
                 const res = await fetch('/admin/all-orders', { credentials: 'include' });
                 const data = await res.json();
-                const list = document.getElementById('ordersList');
+                const list = document.getElementById('list');
                 
                 if (data.success && data.orders.length > 0) {
-                    let p = 0, s = 0, c = 0;
+                    let p = 0, sh = 0, c = 0;
                     data.orders.forEach(o => {
                         if (o.status === 'Pending') p++;
-                        else if (o.status === 'Shipped') s++;
+                        else if (o.status === 'Shipped') sh++;
                         else if (o.status === 'Completed') c++;
                     });
-                    document.getElementById('totalCount').textContent = data.orders.length;
-                    document.getElementById('pendingCount').textContent = p;
-                    document.getElementById('shippedCount').textContent = s;
-                    document.getElementById('completedCount').textContent = c;
                     
-                    list.innerHTML = data.orders.map(order => `
-                        <div class="order-item">
-                            <div class="order-top">
-                                <span>#${order.id}</span>
-                                <span>${new Date(order.order_date).toLocaleDateString()}</span>
+                    document.getElementById('total').textContent = data.orders.length;
+                    document.getElementById('pending').textContent = p;
+                    document.getElementById('shipped').textContent = sh;
+                    document.getElementById('done').textContent = c;
+                    
+                    list.innerHTML = data.orders.map(o => `
+                        <div class="order">
+                            <div class="order-header">
+                                <span>#${o.id}</span>
+                                <span>${new Date(o.order_date).toLocaleDateString()}</span>
                             </div>
                             <div class="order-body">
-                                <div class="info-row">
-                                    <div class="info-chip"><i class="fas fa-user"></i> ${order.user_name || 'N/A'}</div>
-                                    <div class="info-chip"><i class="fas fa-phone"></i> ${order.user_phone || 'N/A'}</div>
+                                <div class="chips">
+                                    <div class="chip"><i class="fas fa-user"></i> ${o.user_name || 'N/A'}</div>
+                                    <div class="chip"><i class="fas fa-phone"></i> ${o.user_phone || 'N/A'}</div>
                                 </div>
-                                <div class="addr-box"><i class="fas fa-map-marker-alt"></i> ${order.shipping_address || 'No address'}</div>
-                                <div class="prod-box"><i class="fas fa-shopping-basket"></i> ${order.products || 'N/A'}</div>
-                                <div class="order-bottom">
+                                <div class="field">
+                                    <label>Address</label>
+                                    <div class="addr">${o.shipping_address || 'No address'}</div>
+                                </div>
+                                <div class="field">
+                                    <label>Products</label>
+                                    <div>${o.products || 'N/A'}</div>
+                                </div>
+                                <div class="order-footer">
                                     <div>
-                                        <span class="status ${order.status.toLowerCase()}">${order.status}</span>
-                                        <div class="total">₹${order.total_amount}</div>
+                                        <span class="badge ${o.status.toLowerCase()}">${o.status}</span>
+                                        <div class="price">₹${o.total_amount}</div>
                                     </div>
-                                    <button class="update-btn" onclick="openModal(${order.id}, '${order.status}')">Update</button>
+                                    <button class="btn-update" onclick="openModal(${o.id}, '${o.status}')">Update</button>
                                 </div>
                             </div>
                         </div>
@@ -358,19 +309,19 @@
         }
 
         function openModal(id, status) {
-            document.getElementById('statusModal').classList.add('active');
-            document.getElementById('orderId').value = id;
-            document.getElementById('orderStatus').value = status;
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('oid').value = id;
+            document.getElementById('status').value = status;
         }
 
         function closeModal() {
-            document.getElementById('statusModal').classList.remove('active');
+            document.getElementById('modal').classList.remove('active');
         }
 
-        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+        document.getElementById('form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('orderId').value;
-            const status = document.getElementById('orderStatus').value;
+            const id = document.getElementById('oid').value;
+            const status = document.getElementById('status').value;
             
             const res = await fetch('/admin/update-order/' + id, {
                 credentials: 'include',
@@ -381,7 +332,7 @@
             
             if (res.ok) {
                 closeModal();
-                loadAdminOrders();
+                loadOrders();
             }
         });
     </script>
