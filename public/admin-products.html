@@ -145,6 +145,12 @@
         function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
         }
+
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
+            }
+        });
     </script>
 </body>
 </html>

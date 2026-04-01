@@ -80,6 +80,20 @@ router.delete('/delete-product/:id', isAdmin, async (req, res) => {
     }
 });
 
+router.put('/update-product/:id', isAdmin, async (req, res) => {
+    try {
+        const { product_name, category_id, description, price, image, stock } = req.body;
+        await pool.query(
+            'UPDATE products SET product_name = ?, category_id = ?, description = ?, price = ?, image = ?, stock = ? WHERE id = ?',
+            [product_name, category_id, description, price, image, stock, req.params.id]
+        );
+        res.json({ success: true, message: 'Product updated!' });
+    } catch (error) {
+        console.error('Update product error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 router.get('/users', isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT id, name, email, phone, created_at FROM users ORDER BY created_at DESC');
