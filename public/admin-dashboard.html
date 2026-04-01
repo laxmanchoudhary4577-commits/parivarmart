@@ -2,21 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Admin Dashboard - Parivar Mart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-sidebar {
+            display: none;
+        }
+        .admin-content {
+            margin-left: 0;
+            padding: 16px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="admin-sidebar">
-        <a href="/" class="logo">Parivar Mart Admin</a>
-        <ul class="admin-nav">
-            <li><a href="/admin-dashboard" class="active">Dashboard</a></li>
-            <li><a href="/admin-products">Products</a></li>
-            <li><a href="/admin-orders">Orders</a></li>
-            <li><a href="/admin-users">Users</a></li>
-            <li><a href="#" id="adminLogout">Logout</a></li>
-        </ul>
-    </nav>
+    <!-- Mobile Admin Header -->
+    <div class="mobile-admin-header">
+        <button class="admin-menu-btn" onclick="toggleAdminMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <span class="admin-title">Parivar Mart Admin</span>
+        <a href="/admin/logout" class="admin-logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+
+    <!-- Mobile Admin Menu -->
+    <div class="mobile-admin-menu" id="adminMenu">
+        <a href="/admin-dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
+        <a href="/admin-orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+        <a href="/admin-users"><i class="fas fa-users"></i> Users</a>
+        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
 
     <div class="admin-content">
         <div class="admin-header">
@@ -57,9 +76,14 @@
         loadAdminStats();
         loadRecentOrders();
 
+        function toggleAdminMenu() {
+            const menu = document.getElementById('adminMenu');
+            menu.classList.toggle('active');
+        }
+
         document.getElementById('adminLogout').addEventListener('click', async (e) => {
             e.preventDefault();
-            await fetch('/admin/logout');
+            await fetch('/admin/logout', { credentials: 'include' });
             window.location.href = '/admin-login';
         });
     </script>

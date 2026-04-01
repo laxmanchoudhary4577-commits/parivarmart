@@ -2,21 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users - Parivan Mart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Manage Users - Parivar Mart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-sidebar { display: none; }
+        .admin-content { margin-left: 0; padding: 16px; }
+    </style>
 </head>
 <body>
-    <nav class="admin-sidebar">
-        <a href="/" class="logo">Parivan Mart Admin</a>
-        <ul class="admin-nav">
-            <li><a href="/admin-dashboard">Dashboard</a></li>
-            <li><a href="/admin-products">Products</a></li>
-            <li><a href="/admin-orders">Orders</a></li>
-            <li><a href="/admin-users" class="active">Users</a></li>
-            <li><a href="#" id="adminLogout">Logout</a></li>
-        </ul>
-    </nav>
+    <div class="mobile-admin-header">
+        <button class="admin-menu-btn" onclick="toggleAdminMenu()"><i class="fas fa-bars"></i></button>
+        <span class="admin-title">Users</span>
+        <span></span>
+    </div>
+
+    <div class="mobile-admin-menu" id="adminMenu">
+        <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
+        <a href="/admin-orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+        <a href="/admin-users" class="active"><i class="fas fa-users"></i> Users</a>
+        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
 
     <div class="admin-content">
         <div class="admin-header">
@@ -43,9 +53,13 @@
         checkAdminSession();
         loadAdminUsers();
 
+        function toggleAdminMenu() {
+            document.getElementById('adminMenu').classList.toggle('active');
+        }
+
         document.getElementById('adminLogout').addEventListener('click', async (e) => {
             e.preventDefault();
-            await fetch('/admin/logout');
+            await fetch('/admin/logout', { credentials: 'include' });
             window.location.href = '/admin-login';
         });
     </script>
