@@ -68,7 +68,15 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
         req.session.user = { id: user.id, name: user.name, email: user.email };
-        res.json({ success: true, message: 'Login successful!', user: req.session.user });
+        
+        // Force session save before responding
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ success: false, message: 'Session error' });
+            }
+            res.json({ success: true, message: 'Login successful!', user: req.session.user });
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }

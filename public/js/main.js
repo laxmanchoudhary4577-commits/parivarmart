@@ -1,16 +1,19 @@
 async function checkSession() {
     try {
         const res = await fetch('/api/check-session', { 
-            credentials: 'include' 
+            credentials: 'include',
+            cache: 'no-store'
         });
         const data = await res.json();
         
         if (data.loggedIn) {
-            document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('registerBtn').style.display = 'none';
-            document.getElementById('userName').style.display = 'inline';
-            document.getElementById('userName').textContent = data.user.name;
-            document.getElementById('logoutBtn').style.display = 'inline';
+            if (document.getElementById('loginBtn')) document.getElementById('loginBtn').style.display = 'none';
+            if (document.getElementById('registerBtn')) document.getElementById('registerBtn').style.display = 'none';
+            if (document.getElementById('userName')) {
+                document.getElementById('userName').style.display = 'inline';
+                document.getElementById('userName').textContent = data.user.name;
+            }
+            if (document.getElementById('logoutBtn')) document.getElementById('logoutBtn').style.display = 'inline';
             updateCartCount();
         }
     } catch (error) {
@@ -144,7 +147,7 @@ async function addToCart(productId, event) {
         const data = await res.json();
         
         if (data.success) {
-            updateCartCount();
+            await updateCartCount();
             const badge = document.getElementById('cartCount');
             if (badge) {
                 badge.classList.add('pop');
@@ -157,7 +160,7 @@ async function addToCart(productId, event) {
         } else {
             btn.classList.remove('adding');
             btn.textContent = 'Add to Cart';
-            if (data.message.includes('login')) {
+            if (data.message && data.message.toLowerCase().includes('login')) {
                 window.location.href = '/login';
             }
         }
