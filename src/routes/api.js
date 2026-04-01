@@ -14,6 +14,21 @@ router.get('/check-session', (req, res) => {
 
 router.get('/seed-products', async (req, res) => {
     try {
+        const categoriesData = [
+            ['Fruits & Vegetables', 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400'],
+            ['Dairy & Eggs', 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400'],
+            ['Bakery', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400'],
+            ['Beverages', 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400'],
+            ['Snacks & Munchies', 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400'],
+            ['Personal Care', 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400'],
+            ['Home Care', 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400'],
+            ['Baby Care', 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400']
+        ];
+        
+        for (const [name, image] of categoriesData) {
+            await pool.query('INSERT IGNORE INTO categories (category_name, category_image) VALUES (?, ?)', [name, image]);
+        }
+        
         const productsData = [
             ['Fresh Apples (1kg)', 1, 'Premium quality red apples', 120, 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400', 50],
             ['Banana (1 dozen)', 1, 'Fresh yellow bananas', 50, 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400', 100],
@@ -30,9 +45,14 @@ router.get('/seed-products', async (req, res) => {
             ['Diapers (30 pcs)', 8, 'Premium baby diapers', 450, 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=400', 30],
         ];
         for (const [name, catId, desc, price, image, stock] of productsData) {
-            await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [name, catId, desc, price, image, stock]);
+            await pool.query('INSERT IGNORE INTO products (product_name, category_id, description, price, image, stock, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)', [name, catId, desc, price, image, stock]);
         }
-        res.json({ success: true, message: 'Products seeded!' });
+        res.json({ success: true, message: 'Categories and Products added!' });
+    } catch (error) {
+        console.error('Seed error:', error);
+        res.status(500).json({ success: false, message: 'Seed error: ' + error.message });
+    }
+});
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -97,20 +117,41 @@ router.get('/categories', async (req, res) => {
         const [rows] = await pool.query('SELECT * FROM categories ORDER BY category_name');
         res.json({ success: true, categories: rows });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('Categories error:', error);
+        res.json({ success: true, categories: [] });
     }
 });
 
 router.get('/products', async (req, res) => {
     try {
         const categoryId = req.query.category;
+        
+        if (categoryId) {
+            const [rows] = await pool.query('SELECT p.*, c.category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1 AND p.category_id = ? ORDER BY p.created_at DESC', [categoryId]);
+            return res.json({ success: true, products: rows });
+        }
+        
+        const [rows] = await pool.query('SELECT p.*, c.category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1 ORDER BY p.created_at DESC');
+        res.json({ success: true, products: rows });
+    } catch (error) {
+        console.error('Products error:', error);
+        res.json({ success: true, products: [] });
+    }
+});
+
+router.get('/products', async (req, res) => {
+    try {
+        console.log('Fetching products...');
+        const categoryId = req.query.category;
         let sql = 'SELECT p.*, c.category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.is_active = 1';
         if (categoryId) {
             sql += ' AND p.category_id = ?';
             const [rows] = await pool.query(sql, [categoryId]);
+            console.log('Products found:', rows.length);
             return res.json({ success: true, products: rows });
         }
         const [rows] = await pool.query(sql + ' ORDER BY p.created_at DESC');
+        console.log('Products found:', rows.length);
         res.json({ success: true, products: rows });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });

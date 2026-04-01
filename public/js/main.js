@@ -44,14 +44,14 @@ document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
 
 async function loadCategories() {
     try {
-        const res = await fetch('/api/categories');
+        const res = await fetch('/api/categories', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
             const grid = document.getElementById('categoryGrid');
             grid.innerHTML = data.categories.map(cat => `
                 <div class="category-card" onclick="filterByCategory(${cat.id})">
-                    <img src="${cat.category_image || 'https://via.placeholder.com/200'}" alt="${cat.category_name}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px;">
+                    <img src="${cat.category_image || 'https://via.placeholder.com/200'}" alt="${cat.category_name}">
                     <h3>${cat.category_name}</h3>
                 </div>
             `).join('');
@@ -63,7 +63,7 @@ async function loadCategories() {
 
 async function loadCategoriesForFilter() {
     try {
-        const res = await fetch('/api/categories');
+        const res = await fetch('/api/categories', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
@@ -82,7 +82,7 @@ async function loadCategoriesForFilter() {
 
 async function loadCategoriesForAdmin() {
     try {
-        const res = await fetch('/api/categories');
+        const res = await fetch('/api/categories', { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
@@ -102,7 +102,7 @@ async function loadCategoriesForAdmin() {
 async function loadProducts(categoryId = null) {
     try {
         const url = categoryId ? `/api/products?category=${categoryId}` : '/api/products';
-        const res = await fetch(url);
+        const res = await fetch(url, { credentials: 'include' });
         const data = await res.json();
         
         if (data.success) {
