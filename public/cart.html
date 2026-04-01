@@ -112,10 +112,48 @@
         </div>
     </footer>
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="/" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="/products" class="mobile-nav-item">
+            <i class="fas fa-store"></i>
+            <span>Products</span>
+        </a>
+        <a href="/cart" class="mobile-nav-item active">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="mobile-cart-badge" id="mobileCartCount">0</span>
+        </a>
+        <a href="/orders" class="mobile-nav-item">
+            <i class="fas fa-box"></i>
+            <span>Orders</span>
+        </a>
+        <a href="/login" class="mobile-nav-item" id="mobileAccountBtn">
+            <i class="fas fa-user"></i>
+            <span>Account</span>
+        </a>
+    </nav>
+
     <script src="/js/main.js"></script>
     <script>
         checkSession();
         loadCart();
+        
+        function updateMobileNav() {
+            const mobileCartCount = document.getElementById('mobileCartCount');
+            const mainCartCount = document.getElementById('cartCount');
+            if (mobileCartCount && mainCartCount) {
+                mobileCartCount.textContent = mainCartCount.textContent;
+            }
+        }
+        const originalUpdateCartCount = window.updateCartCount;
+        window.updateCartCount = async function() {
+            if (originalUpdateCartCount) await originalUpdateCartCount();
+            updateMobileNav();
+        };
     </script>
 </body>
 </html>
