@@ -12,12 +12,24 @@
 <body>
     <header>
         <div class="container">
-            <nav class="navbar">
+            <nav class="navbar" id="mainNav">
                 <a href="/" class="logo">Parivar Mart</a>
                 <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/products">Products</a></li>
+                    <li><a href="/" onclick="toggleMobileMenu()">Home</a></li>
+                    <li><a href="/products" onclick="toggleMobileMenu()">Products</a></li>
                 </ul>
+                <div class="overlay-mask" onclick="toggleMobileMenu()"></div>
+                <div class="mobile-menu" id="mobileMenu">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                        <a href="/" class="logo" style="border: none; padding: 0;">Parivar Mart</a>
+                        <i class="fas fa-times" onclick="toggleMobileMenu()" style="font-size: 24px; color: #333; cursor: pointer;"></i>
+                    </div>
+                    <a href="/" onclick="toggleMobileMenu()">Home</a>
+                    <a href="/products" onclick="toggleMobileMenu()">Products</a>
+                    <a href="/cart" onclick="toggleMobileMenu()">Cart</a>
+                    <a href="/orders" onclick="toggleMobileMenu()">My Orders</a>
+                </div>
+                <button class="mobile-toggle" onclick="toggleMobileMenu()">☰</button>
             </nav>
         </div>
     </header>
@@ -56,6 +68,11 @@
 
     <script src="/js/main.js"></script>
     <script>
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('mobile-open');
+        }
+        
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             if (passwordInput.type === 'password') {

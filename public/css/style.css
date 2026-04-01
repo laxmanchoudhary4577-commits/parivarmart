@@ -1733,6 +1733,81 @@ footer {
     padding: 8px;
 }
 
+.mobile-toggle {
+    display: none;
+}
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    height: 100vh;
+    background: white;
+    z-index: 1000;
+    padding: 100px 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+}
+
+.navbar.mobile-open .mobile-menu {
+    right: 0;
+}
+
+.mobile-menu a {
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--dark);
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-menu a::after {
+    content: '\f105';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    opacity: 0.3;
+}
+
+.overlay-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 999;
+    transition: 0.3s;
+    backdrop-filter: blur(4px);
+}
+
+.navbar.mobile-open .overlay-mask {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu {
+        display: flex;
+    }
+    .mobile-toggle {
+        display: block;
+        font-size: 24px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--dark);
+        padding: 8px;
+    }
+}
+
 @media (hover: none) and (pointer: coarse) {
     .btn:active {
         transform: scale(0.98);
