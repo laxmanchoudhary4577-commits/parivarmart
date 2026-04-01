@@ -136,6 +136,7 @@ async function addToCart(productId, event) {
         btn.textContent = 'Added!';
         
         const res = await fetch('/api/cart/add', {
+            credentials: 'include',
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ product_id: productId, quantity: 1 })
@@ -167,14 +168,14 @@ async function addToCart(productId, event) {
 
 async function updateCartCount() {
     try {
-        const res = await fetch('/api/check-session');
+        const res = await fetch('/api/check-session', { credentials: 'include' });
         const sessionData = await res.json();
         
         if (!sessionData.loggedIn) {
             return;
         }
         
-        const cartRes = await fetch('/api/cart');
+        const cartRes = await fetch('/api/cart', { credentials: 'include' });
         const cartData = await cartRes.json();
         
         if (cartData.success && document.getElementById('cartCount')) {
@@ -188,7 +189,7 @@ async function updateCartCount() {
 
 async function loadCart() {
     try {
-        const res = await fetch('/api/cart');
+        const res = await fetch('/api/cart', { credentials: 'include' });
         const data = await res.json();
         
         if (!data.success) {
@@ -244,6 +245,7 @@ async function updateCartItem(cartId, quantity) {
     
     try {
         const res = await fetch('/api/cart/update/' + cartId, {
+            credentials: 'include',
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ quantity })
@@ -262,6 +264,7 @@ async function updateCartItem(cartId, quantity) {
 async function removeFromCart(cartId) {
     try {
         const res = await fetch('/api/cart/remove/' + cartId, {
+            credentials: 'include',
             method: 'DELETE'
         });
         const data = await res.json();
@@ -459,7 +462,7 @@ document.getElementById('checkoutForm')?.addEventListener('submit', async (e) =>
 
 async function loadOrders() {
     try {
-        const res = await fetch('/api/orders');
+        const res = await fetch('/api/orders', { credentials: 'include' });
         const data = await res.json();
         
         if (!data.success) {

@@ -6,8 +6,11 @@ const cors = require('cors');
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -19,7 +22,8 @@ app.use(session({
     cookie: { 
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: 'lax'
+        sameSite: 'none',
+        secure: false
     }
 }));
 
