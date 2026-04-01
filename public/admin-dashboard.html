@@ -7,198 +7,99 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Admin Dashboard - Parivar Mart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; }
         
-        /* Force mobile layout on all screens for admin */
-        .admin-sidebar { display: none !important; }
-        .admin-content { 
-            margin: 0 !important; 
-            padding: 60px 12px 20px !important;
-            width: 100% !important;
-        }
-        
-        /* Mobile Admin Header */
-        .mobile-admin-header {
-            display: flex !important;
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+            color: white;
+            padding: 15px 20px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: #ff6b35;
-            color: white;
-            padding: 12px 16px;
-            z-index: 1001;
+            z-index: 100;
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(255,107,53,0.3);
         }
-
-        .admin-menu-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-            padding: 4px;
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        
+        .menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 99; border-radius: 0 0 15px 15px; overflow: hidden; }
+        .menu.show { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .menu a { display: flex; align-items: center; gap: 12px; padding: 16px 20px; color: #333; text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid #f5f5f5; }
+        .menu a:hover, .menu a.active { background: linear-gradient(135deg, #fff4f1, #ffe8df); color: #ff6b35; }
+        .menu a i { width: 20px; text-align: center; }
+        
+        .container { padding: 80px 15px 20px; max-width: 800px; margin: 0 auto; }
+        
+        .welcome-card { 
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a); 
+            color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255,107,53,0.3);
         }
-
-        .admin-title {
-            font-size: 16px;
-            font-weight: 600;
+        .welcome-card h2 { font-size: 22px; margin-bottom: 5px; }
+        .welcome-card p { font-size: 14px; opacity: 0.9; }
+        
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+        .stat { background: white; padding: 20px 15px; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px; }
+        .stat-icon.users { background: #e3f2fd; color: #1976d2; }
+        .stat-icon.orders { background: #fff3e0; color: #ff9800; }
+        .stat-icon.pending { background: #fce4ec; color: #e91e63; }
+        .stat-icon.products { background: #e8f5e9; color: #4caf50; }
+        .stat-icon.revenue { background: #f3e5f5; color: #9c27b0; }
+        
+        .stat-num { font-size: 28px; font-weight: 800; color: #1a1a1a; }
+        .stat-label { font-size: 12px; color: #666; font-weight: 500; margin-top: 5px; }
+        
+        .section-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .order-card { background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .order-header { background: #f8f9fa; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .order-id { font-weight: 700; color: #ff6b35; }
+        .order-date { font-size: 12px; color: #666; }
+        
+        .order-body { padding: 12px 15px; }
+        .customer-name { font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px; }
+        .customer-phone { font-size: 13px; color: #666; margin-top: 4px; }
+        
+        .order-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-top: 1px solid #eee; }
+        .order-total { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.processing { background: #cce5ff; color: #004085; }
+        .status-badge.shipped { background: #d1ecf1; color: #0c5460; }
+        .status-badge.completed { background: #d4edda; color: #155724; }
+        .status-badge.cancelled { background: #f8d7da; color: #721c24; }
+        
+        .empty { text-align: center; padding: 40px 20px; color: #999; background: white; border-radius: 16px; }
+        .empty i { font-size: 50px; color: #e0e0e0; margin-bottom: 15px; }
+        
+        .logout-btn { 
+            display: block; width: 100%; padding: 14px; background: white; color: #ff6b35; 
+            border: none; border-radius: 12px; font-size: 15px; font-weight: 600; 
+            margin-top: 20px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-
-        .admin-logout-btn {
-            color: white;
-            font-size: 20px;
-            text-decoration: none;
-            padding: 4px;
+        
+        @media (min-width: 500px) {
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .stat:last-child { grid-column: span 3; max-width: 33%; margin: 0 auto; }
         }
-
-        /* Mobile Admin Menu */
-        .mobile-admin-menu {
-            display: none;
-            position: fixed;
-            top: 50px;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
-
-        .mobile-admin-menu.active {
-            display: block;
-        }
-
-        .mobile-admin-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .mobile-admin-menu a:hover,
-        .mobile-admin-menu a.active {
-            background: #fff4f1;
-            color: #ff6b35;
-        }
-
-        .mobile-admin-menu a i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Mobile Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .stat-card h3 {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .stat-card .value {
-            font-size: 22px;
-            font-weight: 700;
-            color: #333;
-        }
-
-        .admin-header {
-            margin-bottom: 20px;
-        }
-
-        .admin-header h1 {
-            font-size: 20px;
-            margin: 0 0 5px 0;
-            color: #333;
-        }
-
-        .admin-header p {
-            font-size: 13px;
-            color: #666;
-            margin: 0;
-        }
-
-        h2 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #333;
-        }
-
-        /* Mobile Table */
-        .data-table {
-            width: 100%;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            font-size: 12px;
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .data-table th {
-            background: #f9fafb;
-            font-weight: 600;
-            font-size: 11px;
-            color: #666;
-        }
-
-        .order-status {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .order-status.pending { background: #fff3cd; color: #856404; }
-        .order-status.confirmed { background: #d4edda; color: #155724; }
-        .order-status.shipped { background: #cce5ff; color: #004085; }
-        .order-status.delivered { background: #d4edda; color: #155724; }
-        .order-status.cancelled { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <!-- Mobile Admin Header -->
-    <div class="mobile-admin-header">
-        <button class="admin-menu-btn" onclick="toggleAdminMenu()">
-            <i class="fas fa-bars"></i>
-        </button>
-        <span class="admin-title">Admin Dashboard</span>
-        <a href="/admin/logout" class="admin-logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+    <div class="header">
+        <h1>📊 Dashboard</h1>
+        <button class="header-btn" onclick="toggleMenu()">☰</button>
     </div>
-
-    <!-- Mobile Admin Menu -->
-    <div class="mobile-admin-menu" id="adminMenu">
+    
+    <div class="menu" id="adminMenu">
         <a href="/admin-dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="/admin-products"><i class="fas fa-box"></i> Products</a>
         <a href="/admin-orders"><i class="fas fa-shopping-bag"></i> Orders</a>
@@ -206,55 +107,137 @@
         <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
-    <div class="admin-content">
-        <div class="admin-header">
-            <h1>Dashboard</h1>
-            <p>Welcome, <span id="adminName">Admin</span></p>
+    <div class="container">
+        <div class="welcome-card">
+            <h2>Welcome, Admin! 👋</h2>
+            <p>Here's what's happening with your store today</p>
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Users</h3>
-                <div class="value" id="totalUsers">0</div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-icon users"><i class="fas fa-users"></i></div>
+                <div class="stat-num" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
             </div>
-            <div class="stat-card">
-                <h3>Total Orders</h3>
-                <div class="value" id="totalOrders">0</div>
+            <div class="stat">
+                <div class="stat-icon orders"><i class="fas fa-shopping-bag"></i></div>
+                <div class="stat-num" id="totalOrders">0</div>
+                <div class="stat-label">Total Orders</div>
             </div>
-            <div class="stat-card">
-                <h3>Pending</h3>
-                <div class="value" id="pendingOrders" style="color: #ff9800;">0</div>
+            <div class="stat">
+                <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+                <div class="stat-num" id="pendingOrders" style="color: #ff9800;">0</div>
+                <div class="stat-label">Pending Orders</div>
             </div>
-            <div class="stat-card">
-                <h3>Products</h3>
-                <div class="value" id="totalProducts">0</div>
+            <div class="stat">
+                <div class="stat-icon products"><i class="fas fa-box"></i></div>
+                <div class="stat-num" id="totalProducts">0</div>
+                <div class="stat-label">Products</div>
             </div>
-            <div class="stat-card">
-                <h3>Revenue</h3>
-                <div class="value" id="totalRevenue" style="color: #4caf50;">₹0</div>
+            <div class="stat">
+                <div class="stat-icon revenue"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-num" id="totalRevenue" style="color: #4caf50;">₹0</div>
+                <div class="stat-label">Revenue</div>
             </div>
         </div>
-
-        <h2>Recent Orders</h2>
+        
+        <div class="section-title">📋 Recent Orders</div>
         <div id="recentOrders"></div>
+        
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
     </div>
 
-    <script src="/js/main.js"></script>
     <script>
-        checkAdminSession();
-        loadAdminStats();
-        loadRecentOrders();
-
-        function toggleAdminMenu() {
-            const menu = document.getElementById('adminMenu');
-            menu.classList.toggle('active');
+        function toggleMenu() {
+            document.getElementById('adminMenu').classList.toggle('show');
         }
-
-        document.getElementById('adminLogout')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await fetch('/admin/logout', { credentials: 'include' });
-            window.location.href = '/admin-login';
-        });
+        
+        async function checkAdmin() {
+            try {
+                const res = await fetch('/admin/check-session', { credentials: 'include' });
+                const data = await res.json();
+                if (!data.loggedIn) {
+                    window.location.href = '/admin-login';
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                window.location.href = '/admin-login';
+                return false;
+            }
+        }
+        
+        async function loadStats() {
+            const isAdmin = await checkAdmin();
+            if (!isAdmin) return;
+            
+            try {
+                const [usersRes, ordersRes, productsRes] = await Promise.all([
+                    fetch('/admin/all-users', { credentials: 'include' }),
+                    fetch('/admin/all-orders', { credentials: 'include' }),
+                    fetch('/admin/all-products', { credentials: 'include' })
+                ]);
+                
+                const usersData = await usersRes.json();
+                const ordersData = await ordersRes.json();
+                const productsData = await productsRes.json();
+                
+                const orders = ordersData.orders || [];
+                const pending = orders.filter(o => o.status === 'Pending').length;
+                const revenue = orders.reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
+                
+                document.getElementById('totalUsers').textContent = usersData.users?.length || 0;
+                document.getElementById('totalOrders').textContent = orders.length;
+                document.getElementById('pendingOrders').textContent = pending;
+                document.getElementById('totalProducts').textContent = productsData.products?.length || 0;
+                document.getElementById('totalRevenue').textContent = '₹' + Math.round(revenue).toLocaleString();
+            } catch (e) {
+                console.error('Error loading stats:', e);
+            }
+        }
+        
+        async function loadRecentOrders() {
+            try {
+                const res = await fetch('/admin/all-orders', { credentials: 'include' });
+                const data = await res.json();
+                
+                const container = document.getElementById('recentOrders');
+                
+                if (data.success && data.orders.length > 0) {
+                    const recent = data.orders.slice(0, 5);
+                    container.innerHTML = recent.map(order => `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">#${order.id}</span>
+                                <span class="order-date">${new Date(order.order_date).toLocaleDateString()}</span>
+                            </div>
+                            <div class="order-body">
+                                <div class="customer-name"><i class="fas fa-user"></i> ${order.user_name || 'N/A'}</div>
+                                <div class="customer-phone"><i class="fas fa-phone"></i> ${order.user_phone || 'N/A'}</div>
+                            </div>
+                            <div class="order-footer">
+                                <span class="order-total">₹${order.total_amount}</span>
+                                <span class="status-badge ${order.status.toLowerCase()}">${order.status}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty"><i class="fas fa-shopping-bag"></i><p>No orders yet</p></div>';
+                }
+            } catch (e) {
+                console.error('Error loading orders:', e);
+            }
+        }
+        
+        async function logout() {
+            if (confirm('Logout from admin?')) {
+                await fetch('/admin/logout', { credentials: 'include' });
+                window.location.href = '/admin-login';
+            }
+        }
+        
+        loadStats();
+        loadRecentOrders();
     </script>
 </body>
 </html>

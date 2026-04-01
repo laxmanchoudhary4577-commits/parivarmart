@@ -5,117 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ff6b35">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Manage Products - Parivar Mart</title>
+    <title>Products - Parivar Mart Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-        }
-        .admin-sidebar { display: none !important; }
-        .admin-content { margin: 0 !important; padding: 60px 12px 20px !important; width: 100% !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; }
         
-        .mobile-admin-header {
-            display: flex !important;
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
+            color: white;
+            padding: 15px 20px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: #ff6b35;
-            color: white;
-            padding: 12px 16px;
-            z-index: 1001;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-        }
-        .admin-menu-btn { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px; }
-        .admin-title { font-size: 16px; font-weight: 600; }
-        
-        .mobile-admin-menu {
-            display: none;
-            position: fixed;
-            top: 50px;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-        }
-        .mobile-admin-menu.active { display: block; }
-        .mobile-admin-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .mobile-admin-menu a:hover, .mobile-admin-menu a.active { background: #fff4f1; color: #ff6b35; }
-        .mobile-admin-menu a i { width: 20px; text-align: center; }
-        
-        .admin-header {
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
+            box-shadow: 0 2px 10px rgba(255,107,53,0.3);
         }
-        .admin-header h1 { font-size: 18px; margin: 0; color: #333; }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 18px; cursor: pointer; }
         
-        .btn { padding: 10px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .btn-primary { background: #ff6b35; color: white; }
+        .menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 99; border-radius: 0 0 15px 15px; overflow: hidden; }
+        .menu.show { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .menu a { display: flex; align-items: center; gap: 12px; padding: 16px 20px; color: #333; text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid #f5f5f5; }
+        .menu a:hover, .menu a.active { background: linear-gradient(135deg, #fff4f1, #ffe8df); color: #ff6b35; }
+        .menu a i { width: 20px; text-align: center; }
         
-        .data-table { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-size: 12px; }
-        .data-table th, .data-table td { padding: 10px 6px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 11px; }
-        .data-table th { background: #f9fafb; font-weight: 600; font-size: 10px; color: #666; }
-        .data-table img { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+        .container { padding: 80px 15px 20px; max-width: 800px; margin: 0 auto; }
         
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-title { font-size: 18px; font-weight: 600; color: #333; }
+        
+        .add-btn { background: #ff6b35; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .product-card { background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; }
+        .product-img { width: 100px; height: 100px; object-fit: cover; background: #f5f5f5; }
+        .product-info { flex: 1; padding: 12px 15px; }
+        .product-name { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .product-cat { font-size: 12px; color: #ff6b35; background: #fff4f1; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 8px; }
+        .product-price { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+        .product-price span { font-size: 12px; color: #666; font-weight: 400; }
+        .product-stock { font-size: 12px; color: #4caf50; margin-left: 10px; }
+        
+        .product-actions { display: flex; gap: 8px; padding: 10px 15px; border-top: 1px solid #eee; }
+        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .edit-btn { background: #e3f2fd; color: #1976d2; }
+        .delete-btn { background: #fce4ec; color: #e91e63; }
+        
+        .empty { text-align: center; padding: 60px 20px; color: #999; background: white; border-radius: 16px; }
+        .empty i { font-size: 60px; color: #e0e0e0; margin-bottom: 15px; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 25px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 18px; color: #333; }
+        .modal-close { background: none; border: none; font-size: 24px; color: #666; cursor: pointer; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 14px; 
         }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-header h3 { margin: 0; font-size: 18px; }
-        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #ff6b35; }
         
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #ff6b35;
-        }
+        .submit-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6b35, #ff8c5a); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="mobile-admin-header">
-        <button class="admin-menu-btn" onclick="toggleAdminMenu()"><i class="fas fa-bars"></i></button>
-        <span class="admin-title">Products</span>
-        <button class="admin-menu-btn" onclick="openProductModal()"><i class="fas fa-plus"></i></button>
+    <div class="header">
+        <h1>📦 Products</h1>
+        <button class="header-btn" onclick="toggleMenu()">☰</button>
     </div>
-
-    <div class="mobile-admin-menu" id="adminMenu">
+    
+    <div class="menu" id="adminMenu">
         <a href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="/admin-products" class="active"><i class="fas fa-box"></i> Products</a>
         <a href="/admin-orders"><i class="fas fa-shopping-bag"></i> Orders</a>
@@ -123,36 +91,20 @@
         <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
-    <div class="admin-content">
-        <div class="admin-header">
-            <h1>Products</h1>
-            <div>
-                <button class="btn" style="background:#e5e7eb;margin-right:8px;" onclick="seedProducts()">+ Seed</button>
-                <button class="btn btn-primary" onclick="openProductModal()">+ Add</button>
-            </div>
+    <div class="container">
+        <div class="section-header">
+            <div class="section-title">All Products</div>
+            <button class="add-btn" onclick="openModal()">➕ Add Product</button>
         </div>
-
-        <div id="productMessage"></div>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Img</th>
-                    <th>Name</th>
-                    <th>Cat</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody id="productTableBody"></tbody>
-        </table>
+        <div id="message"></div>
+        <div id="productsContainer"></div>
     </div>
 
     <div class="modal" id="productModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modalTitle">Add Product</h3>
-                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <form id="productForm">
                 <input type="hidden" id="productId">
@@ -166,7 +118,7 @@
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="productDescription" rows="2"></textarea>
+                    <textarea id="productDesc" rows="2"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Price (₹)</label>
@@ -180,92 +132,117 @@
                     <label>Image URL</label>
                     <input type="text" id="productImage" placeholder="https://...">
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Save</button>
+                <button type="submit" class="submit-btn">Save Product</button>
             </form>
         </div>
     </div>
 
-    <script src="/js/main.js"></script>
     <script>
-        checkAdminSession();
-        loadAdminProducts();
-        loadCategoriesForAdmin();
-
-        async function seedProducts() {
-            if (!confirm('Add sample products to database?')) return;
-            try {
-                const res = await fetch('/api/seed-products', { credentials: 'include' });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('productMessage').innerHTML = '<div style="background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:10px;">Products added!</div>';
-                    loadAdminProducts();
-                }
-            } catch (e) {
-                alert('Error seeding products');
-            }
+        function toggleMenu() { document.getElementById('adminMenu').classList.toggle('show'); }
+        
+        async function checkAdmin() {
+            const res = await fetch('/admin/check-session', { credentials: 'include' });
+            const data = await res.json();
+            if (!data.loggedIn) window.location.href = '/admin-login';
+            return data.loggedIn;
         }
         
-        function toggleAdminMenu() {
-            document.getElementById('adminMenu').classList.toggle('active');
+        async function loadProducts() {
+            if (!await checkAdmin()) return;
+            try {
+                const res = await fetch('/admin/all-products', { credentials: 'include' });
+                const data = await res.json();
+                
+                const container = document.getElementById('productsContainer');
+                if (data.products && data.products.length > 0) {
+                    container.innerHTML = data.products.map(p => `
+                        <div class="product-card">
+                            <img src="${p.image || 'https://via.placeholder.com/100'}" class="product-img" alt="${p.product_name}">
+                            <div class="product-info">
+                                <div class="product-name">${p.product_name}</div>
+                                <div class="product-cat">${p.category_name || 'Uncategorized'}</div>
+                                <div class="product-price">₹${p.price} <span class="product-stock">Stock: ${p.stock}</span></div>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="action-btn edit-btn" onclick="editProduct(${p.id}, '${p.product_name}', ${p.category_id}, '${p.description || ''}', ${p.price}, ${p.stock}, '${p.image || ''}')">✏️ Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct(${p.id})">🗑️ Delete</button>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty"><i class="fas fa-box"></i><p>No products found</p></div>';
+                }
+            } catch (e) { console.error(e); }
         }
-
+        
+        function openModal(product = null) {
+            document.getElementById('productModal').classList.add('show');
+            document.getElementById('modalTitle').textContent = product ? 'Edit Product' : 'Add Product';
+            if (product) {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productStock').value = product.stock;
+            } else {
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+            }
+            loadCategories();
+        }
+        
+        function closeModal() { document.getElementById('productModal').classList.remove('show'); }
+        
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/categories');
+                const data = await res.json();
+                const select = document.getElementById('productCategory');
+                select.innerHTML = data.categories.map(c => `<option value="${c.id}">${c.category_name}</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+        
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const productId = document.getElementById('productId').value;
+            const id = document.getElementById('productId').value;
             const data = {
                 product_name: document.getElementById('productName').value,
                 category_id: document.getElementById('productCategory').value,
-                description: document.getElementById('productDescription').value,
+                description: document.getElementById('productDesc').value,
                 price: document.getElementById('productPrice').value,
                 stock: document.getElementById('productStock').value,
                 image: document.getElementById('productImage').value
             };
-
-            const url = productId ? '/admin/update-product/' + productId : '/admin/add-product';
-            const method = productId ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                credentials: 'include',
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
-
-            if (result.success) {
-                document.getElementById('productMessage').innerHTML = '<div style="background:#d4edda;color:#155724;padding:10px;border-radius:8px;margin-bottom:10px;">' + result.message + '</div>';
-                closeProductModal();
-                loadAdminProducts();
-            } else {
-                document.getElementById('productMessage').innerHTML = '<div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:8px;margin-bottom:10px;">' + result.message + '</div>';
-            }
-        });
-
-        function openProductModal(product = null) {
-            document.getElementById('productModal').classList.add('active');
-            document.getElementById('modalTitle').textContent = product ? 'Edit Product' : 'Add Product';
             
-            if (product) {
-                document.getElementById('productId').value = product.id;
-                document.getElementById('productName').value = product.product_name;
-                document.getElementById('productCategory').value = product.category_id;
-                document.getElementById('productDescription').value = product.description || '';
-                document.getElementById('productPrice').value = product.price;
-                document.getElementById('productStock').value = product.stock;
-                document.getElementById('productImage').value = product.image || '';
-            } else {
-                document.getElementById('productId').value = '';
-                document.getElementById('productForm').reset();
-            }
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-        }
-
-        document.getElementById('productModal').addEventListener('click', function(e) {
-            if (e.target === this) closeProductModal();
+            const url = id ? '/admin/update-product/' + id : '/admin/add-product';
+            const method = id ? 'PUT' : 'POST';
+            
+            const res = await fetch(url, { method, credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            const result = await res.json();
+            
+            document.getElementById('message').innerHTML = result.success ? '<div style="background:#d4edda;color:#155724;padding:12px;border-radius:10px;margin-bottom:15px;">' + result.message + '</div>' : '<div style="background:#f8d7da;color:#721c24;padding:12px;border-radius:10px;margin-bottom:15px;">' + result.message + '</div>';
+            
+            if (result.success) { closeModal(); loadProducts(); }
         });
+        
+        function editProduct(id, name, catId, desc, price, stock, img) {
+            document.getElementById('productModal').classList.add('show');
+            document.getElementById('modalTitle').textContent = 'Edit Product';
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = name;
+            document.getElementById('productDesc').value = desc;
+            document.getElementById('productPrice').value = price;
+            document.getElementById('productStock').value = stock;
+            document.getElementById('productImage').value = img;
+            loadCategories().then(() => document.getElementById('productCategory').value = catId);
+        }
+        
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            await fetch('/admin/delete-product/' + id, { method: 'DELETE', credentials: 'include' });
+            loadProducts();
+        }
+        
+        loadProducts();
     </script>
 </body>
 </html>
