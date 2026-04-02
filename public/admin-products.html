@@ -238,8 +238,18 @@
         
         async function deleteProduct(id) {
             if (!confirm('Delete this product?')) return;
-            await fetch('/admin/delete-product/' + id, { method: 'DELETE', credentials: 'include' });
-            loadProducts();
+            try {
+                const res = await fetch('/admin/delete-product/' + id, { method: 'DELETE', credentials: 'include' });
+                const data = await res.json();
+                if (data.success) {
+                    loadProducts();
+                } else {
+                    alert(data.message || 'Delete failed');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Delete failed');
+            }
         }
         
         loadProducts();

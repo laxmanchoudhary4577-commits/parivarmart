@@ -103,10 +103,21 @@ router.post('/add-product', isAdmin, async (req, res) => {
 
 router.delete('/delete-product/:id', isAdmin, async (req, res) => {
     try {
-        await pool.query('DELETE FROM products WHERE id = ?', [req.params.id]);
+        const productId = req.params.id;
+        console.log('Deleting product:', productId);
+        
+        await pool.query('DELETE FROM order_items WHERE product_id = ?', [productId]);
+        const [result] = await pool.query('DELETE FROM products WHERE id = ?', [productId]);
+        console.log('Delete result:', result);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+        
         res.json({ success: true, message: 'Product deleted!' });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('Delete product error:', error);
+        res.status(500).json({ success: false, message: 'Server error: ' + error.message });
     }
 });
 

@@ -6,9 +6,11 @@ function isAuthenticated(req, res, next) {
 }
 
 function isAdmin(req, res, next) {
+    console.log('isAdmin check - session:', req.session);
     if (req.session.admin) {
         return next();
     }
+    console.log('isAdmin failed - no admin session');
     res.status(401).json({ success: false, message: 'Admin access required' });
 }
 
