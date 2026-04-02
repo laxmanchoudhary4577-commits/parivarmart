@@ -176,10 +176,10 @@ router.get('/stats', isAdmin, async (req, res) => {
     try {
         const [users] = await pool.query('SELECT COUNT(*) as count FROM users');
         const [orders] = await pool.query('SELECT COUNT(*) as count FROM orders');
-        const [products] = await pool.query('SELECT COUNT(*) as count FROM products');
-        const [revenue] = await pool.query("SELECT SUM(total_amount) as total FROM orders WHERE status = 'Completed'");
+        const [products] = await pool.query('SELECT COUNT(*) as count FROM products WHERE is_active = 1');
+        const [revenue] = await pool.query("SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'Completed'");
         const [pending] = await pool.query("SELECT COUNT(*) as count FROM orders WHERE status = 'Pending'");
-        const [lowStock] = await pool.query("SELECT COUNT(*) as count FROM products WHERE stock <= 10 AND is_active = 1");
+        const [lowStock] = await pool.query("SELECT COUNT(*) as count FROM products WHERE stock <= 5 AND is_active = 1");
         res.json({ success: true, stats: { 
             users: users[0].count, 
             orders: orders[0].count, 
@@ -275,6 +275,15 @@ router.put('/update-product/:id', isAdmin, async (req, res) => {
 });
 
 router.get('/users', isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT id, name, email, phone, created_at FROM users ORDER BY created_at DESC');
+        res.json({ success: true, users: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.get('/all-users', isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT id, name, email, phone, created_at FROM users ORDER BY created_at DESC');
         res.json({ success: true, users: rows });

@@ -100,8 +100,11 @@
         async function loadUsers() {
             if (!await checkAdmin()) return;
             try {
+                console.log('Loading users...');
                 const res = await fetch('/admin/all-users', { credentials: 'include' });
+                console.log('Response status:', res.status);
                 const data = await res.json();
+                console.log('User data:', data);
                 
                 const container = document.getElementById('usersContainer');
                 document.getElementById('totalUsers').textContent = data.users?.length || 0;
@@ -125,7 +128,7 @@
                 } else {
                     container.innerHTML = '<div class="empty"><i class="fas fa-users"></i><p>No users found</p></div>';
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error('Load users error:', e); }
         }
         
         loadUsers();
