@@ -21,15 +21,27 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
         req.session.admin = { id: admin.id, username: admin.username };
-        res.json({ success: true, message: 'Login successful!', admin: req.session.admin });
+        
+        req.session.save((err) => {
+            if (err) {
+                console.error('Admin session save error:', err);
+                return res.status(500).json({ success: false, message: 'Session error' });
+            }
+            res.json({ success: true, message: 'Login successful!', admin: req.session.admin });
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
 router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.json({ success: true });
+    req.session.destroy((err) => {
+        if (err) {
+            return res.json({ success: false, message: 'Logout failed' });
+        }
+        res.clearCookie('sessionId');
+        res.json({ success: true });
+    });
 });
 
 router.get('/stats', isAdmin, async (req, res) => {
@@ -64,7 +76,8 @@ router.get('/orders', isAdmin, async (req, res) => {
 router.post('/add-product', isAdmin, async (req, res) => {
     try {
         const { product_name, category_id, description, price, image, stock } = req.body;
-        await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [product_name, category_id, description, price, image, stock || 0]);
+        const imageUrl = image && image.trim() ? image.trim() : null;
+        await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [product_name, category_id, description, price, imageUrl, stock || 0]);
         res.json({ success: true, message: 'Product added!' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -83,9 +96,10 @@ router.delete('/delete-product/:id', isAdmin, async (req, res) => {
 router.put('/update-product/:id', isAdmin, async (req, res) => {
     try {
         const { product_name, category_id, description, price, image, stock } = req.body;
+        const imageUrl = image && image.trim() ? image.trim() : null;
         await pool.query(
             'UPDATE products SET product_name = ?, category_id = ?, description = ?, price = ?, image = ?, stock = ? WHERE id = ?',
-            [product_name, category_id, description, price, image, stock, req.params.id]
+            [product_name, category_id, description, price, imageUrl, stock, req.params.id]
         );
         res.json({ success: true, message: 'Product updated!' });
     } catch (error) {
