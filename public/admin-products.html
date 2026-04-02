@@ -157,7 +157,7 @@
                 if (data.products && data.products.length > 0) {
                     container.innerHTML = data.products.map(p => `
                         <div class="product-card">
-                            <img src="${p.image || 'https://via.placeholder.com/100'}" class="product-img" alt="${p.product_name}">
+                            <img src="${p.image || 'https://placehold.co/100x100?text=No+Image'}" class="product-img" alt="${p.product_name}">
                             <div class="product-info">
                                 <div class="product-name">${p.product_name}</div>
                                 <div class="product-cat">${p.category_name || 'Uncategorized'}</div>

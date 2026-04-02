@@ -55,7 +55,7 @@ async function loadCategories() {
             if (grid) {
                 grid.innerHTML = data.categories.map(cat => `
                     <div class="category-card" onclick="filterByCategory(${cat.id})">
-                        <img src="${cat.category_image || 'https://via.placeholder.com/200'}" alt="${cat.category_name}">
+                        <img src="${cat.category_image || 'https://placehold.co/200x200?text=' + encodeURIComponent(cat.category_name)}" alt="${cat.category_name}">
                         <h3>${cat.category_name}</h3>
                     </div>
                 `).join('');
@@ -121,7 +121,7 @@ async function loadProducts(categoryId = null) {
             if (grid) {
                 grid.innerHTML = data.products.map(product => `
                     <div class="product-card">
-                        <img src="${product.image || 'https://via.placeholder.com/250x200'}" alt="${product.product_name}" class="product-image">
+                        <img src="${product.image || 'https://placehold.co/250x200?text=No+Image'}" alt="${product.product_name}" class="product-image">
                         <div class="product-info">
                             <h3 class="product-name">${product.product_name}</h3>
                             <p class="product-price">₹${product.price}</p>
@@ -231,7 +231,7 @@ async function loadCart() {
             total += itemTotal;
             return `
                 <div class="cart-item">
-                    <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.product_name}" class="cart-item-image">
+                    <img src="${item.image || 'https://placehold.co/100x100?text=No+Image'}" alt="${item.product_name}" class="cart-item-image">
                     <div class="cart-item-info">
                         <h3>${item.product_name}</h3>
                         <p class="cart-item-price">₹${item.price}</p>
@@ -608,7 +608,7 @@ async function loadAdminProducts() {
             tbody.innerHTML = data.products.map(product => `
                 <tr>
                     <td>${product.id}</td>
-                    <td><img src="${product.image || 'https://via.placeholder.com/50'}"></td>
+                    <td><img src="${product.image || 'https://placehold.co/50x50?text=N'}"></td>
                     <td>${product.product_name}</td>
                     <td>${product.category_name}</td>
                     <td>₹${product.price}</td>

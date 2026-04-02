@@ -220,8 +220,18 @@ router.get('/orders', isAdmin, async (req, res) => {
 
 router.post('/add-product', isAdmin, async (req, res) => {
     try {
-        const { product_name, category_id, description, price, image, stock } = req.body;
-        const imageUrl = image && image.trim() ? image.trim() : null;
+        let { product_name, category_id, description, price, image, stock } = req.body;
+        
+        let imageUrl = null;
+        if (image && image.trim()) {
+            let url = image.trim();
+            if (url.includes('pin.it') || url.includes('pinterest.com/pin')) {
+                imageUrl = url;
+            } else {
+                imageUrl = url;
+            }
+        }
+        
         await pool.query('INSERT INTO products (product_name, category_id, description, price, image, stock) VALUES (?, ?, ?, ?, ?, ?)', [product_name, category_id, description, price, imageUrl, stock || 0]);
         res.json({ success: true, message: 'Product added!' });
     } catch (error) {
