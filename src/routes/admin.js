@@ -117,6 +117,21 @@ router.get('/products', isAdmin, async (req, res) => {
     }
 });
 
+router.get('/all-products', isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT p.*, c.category_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            ORDER BY p.created_at DESC
+        `);
+        res.json({ success: true, products: rows });
+    } catch (error) {
+        console.error('All products error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 router.get('/all-orders', isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query(`
