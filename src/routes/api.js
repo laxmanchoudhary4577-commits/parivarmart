@@ -206,22 +206,36 @@ router.put('/cart/update/:id', isAuthenticated, async (req, res) => {
 router.post('/order', isAuthenticated, async (req, res) => {
     try {
         const { shipping_address, payment_method } = req.body;
-        const [items] = await pool.query('SELECT c.quantity, p.price, p.stock, p.id FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?', [req.session.user.id]);
+        const [items] = await pool.query('SELECT c.quantity, p.price, p.stock, p.id, p.product_name FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?', [req.session.user.id]);
         if (items.length === 0) return res.status(400).json({ success: false, message: 'Cart is empty' });
         
         let total = 0;
         for (const item of items) {
-            if (item.quantity > item.stock) return res.status(400).json({ success: false, message: `No stock for product ${item.id}` });
+            if (item.quantity > item.stock) {
+                return res.status(400).json({ success: false, message: `Only ${item.stock} stock available for ${item.product_name}` });
+            }
             total += item.price * item.quantity;
         }
 
         const [orderResult] = await pool.query('INSERT INTO orders (user_id, total_amount, shipping_address, payment_method) VALUES (?, ?, ?, ?)', [req.session.user.id, total, shipping_address, payment_method || 'Cash']);
         const orderId = orderResult.insertId;
-        for (const item of items) {
-            await pool.query('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)', [orderId, item.id, item.quantity, item.price]);
-            await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.id]);
+        
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+            for (const item of items) {
+                await connection.query('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)', [orderId, item.id, item.quantity, item.price]);
+                await connection.query('UPDATE products SET stock = GREATEST(0, stock - ?) WHERE id = ?', [item.quantity, item.id]);
+            }
+            await connection.query('DELETE FROM cart WHERE user_id = ?', [req.session.user.id]);
+            await connection.commit();
+        } catch (err) {
+            await connection.rollback();
+            throw err;
+        } finally {
+            connection.release();
         }
-        await pool.query('DELETE FROM cart WHERE user_id = ?', [req.session.user.id]);
+        
         res.json({ success: true, order_id: orderId });
     } catch (error) {
         console.error('Order error:', error);

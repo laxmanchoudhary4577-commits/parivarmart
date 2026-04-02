@@ -51,15 +51,32 @@ router.get('/stats', isAdmin, async (req, res) => {
         const [products] = await pool.query('SELECT COUNT(*) as count FROM products');
         const [revenue] = await pool.query("SELECT SUM(total_amount) as total FROM orders WHERE status = 'Completed'");
         const [pending] = await pool.query("SELECT COUNT(*) as count FROM orders WHERE status = 'Pending'");
+        const [lowStock] = await pool.query("SELECT COUNT(*) as count FROM products WHERE stock <= 10 AND is_active = 1");
         res.json({ success: true, stats: { 
             users: users[0].count, 
             orders: orders[0].count, 
             products: products[0].count, 
             revenue: revenue[0].total || 0, 
-            pendingOrders: pending[0].count 
+            pendingOrders: pending[0].count,
+            lowStockProducts: lowStock[0].count
         } });
     } catch (error) {
         console.error('Stats error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+router.get('/stock-alert', isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT p.id, p.product_name, p.stock, c.category_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            WHERE p.stock <= 10 AND p.is_active = 1 
+            ORDER BY p.stock ASC
+        `);
+        res.json({ success: true, products: rows });
+    } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });

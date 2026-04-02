@@ -53,6 +53,14 @@
         .stat-icon.pending { background: #fce4ec; color: #e91e63; }
         .stat-icon.products { background: #e8f5e9; color: #4caf50; }
         .stat-icon.revenue { background: #f3e5f5; color: #9c27b0; }
+        .stat-icon.low-stock { background: #ffebee; color: #f44336; }
+        
+        .stock-alert { background: #ffebee; border-left: 4px solid #f44336; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; }
+        .stock-alert h3 { color: #c62828; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .stock-alert-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ffcdd2; font-size: 13px; }
+        .stock-alert-item:last-child { border-bottom: none; }
+        .stock-alert-item .name { color: #333; }
+        .stock-alert-item .stock { color: #f44336; font-weight: 600; }
         
         .stat-num { font-size: 28px; font-weight: 800; color: #1a1a1a; }
         .stat-label { font-size: 12px; color: #666; font-weight: 500; margin-top: 5px; }
@@ -139,7 +147,14 @@
                 <div class="stat-num" id="totalRevenue" style="color: #4caf50;">₹0</div>
                 <div class="stat-label">Revenue</div>
             </div>
+            <div class="stat">
+                <div class="stat-icon low-stock"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-num" id="lowStockCount" style="color: #f44336;">0</div>
+                <div class="stat-label">Low Stock</div>
+            </div>
         </div>
+        
+        <div id="stockAlert"></div>
         
         <div class="section-title">📋 Recent Orders</div>
         <div id="recentOrders"></div>
@@ -172,27 +187,45 @@
             if (!isAdmin) return;
             
             try {
-                const [usersRes, ordersRes, productsRes] = await Promise.all([
-                    fetch('/admin/all-users', { credentials: 'include' }),
-                    fetch('/admin/all-orders', { credentials: 'include' }),
-                    fetch('/admin/all-products', { credentials: 'include' })
-                ]);
+                const res = await fetch('/admin/stats', { credentials: 'include' });
+                const data = await res.json();
                 
-                const usersData = await usersRes.json();
-                const ordersData = await ordersRes.json();
-                const productsData = await productsRes.json();
-                
-                const orders = ordersData.orders || [];
-                const pending = orders.filter(o => o.status === 'Pending').length;
-                const revenue = orders.reduce((sum, o) => sum + parseFloat(o.total_amount || 0), 0);
-                
-                document.getElementById('totalUsers').textContent = usersData.users?.length || 0;
-                document.getElementById('totalOrders').textContent = orders.length;
-                document.getElementById('pendingOrders').textContent = pending;
-                document.getElementById('totalProducts').textContent = productsData.products?.length || 0;
-                document.getElementById('totalRevenue').textContent = '₹' + Math.round(revenue).toLocaleString();
+                if (data.success) {
+                    document.getElementById('totalUsers').textContent = data.stats.users;
+                    document.getElementById('totalOrders').textContent = data.stats.orders;
+                    document.getElementById('pendingOrders').textContent = data.stats.pendingOrders;
+                    document.getElementById('totalProducts').textContent = data.stats.products;
+                    document.getElementById('totalRevenue').textContent = '₹' + Math.round(data.stats.revenue).toLocaleString();
+                    document.getElementById('lowStockCount').textContent = data.stats.lowStockProducts;
+                }
             } catch (e) {
                 console.error('Error loading stats:', e);
+            }
+        }
+        
+        async function loadStockAlert() {
+            try {
+                const res = await fetch('/admin/stock-alert', { credentials: 'include' });
+                const data = await res.json();
+                const container = document.getElementById('stockAlert');
+                
+                if (data.success && data.products && data.products.length > 0) {
+                    container.innerHTML = `
+                        <div class="stock-alert">
+                            <h3><i class="fas fa-exclamation-circle"></i> Low Stock Alert (≤10)</h3>
+                            ${data.products.slice(0, 5).map(p => `
+                                <div class="stock-alert-item">
+                                    <span class="name">${p.product_name}</span>
+                                    <span class="stock">${p.stock} left</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '';
+                }
+            } catch (e) {
+                console.error('Error loading stock alert:', e);
             }
         }
         
@@ -237,6 +270,7 @@
         }
         
         loadStats();
+        loadStockAlert();
         loadRecentOrders();
     </script>
 </body>
