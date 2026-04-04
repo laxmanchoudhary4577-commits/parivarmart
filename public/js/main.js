@@ -392,7 +392,7 @@ async function initiateRazorpayPayment() {
         }
 
         const options = {
-            key: 'rzp_test_y0e2E3kqJw6qVd',
+            key: 'rzp_live_SZI2CqhjVFun8a',
             amount: data.order.amount,
             currency: 'INR',
             name: 'Parivar Mart',
