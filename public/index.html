@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#ff6b35">
+    <meta name="theme-color" content="#d4a574">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Parivar Mart - Online Shopping</title>
+    <title>Parivar Salon & Spa - Luxury Beauty Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -14,12 +14,12 @@
     <header>
         <div class="container">
             <nav class="navbar" id="mainNav">
-                <a href="/" class="logo">Parivar Mart</a>
+                <a href="/" class="logo">Parivar Salon</a>
                 <ul class="nav-links">
                     <li><a href="/" onclick="toggleMobileMenu()">Home</a></li>
-                    <li><a href="/products" onclick="toggleMobileMenu()">Products</a></li>
-                    <li><a href="/cart" onclick="toggleMobileMenu()">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
-                    <li><a href="/orders" onclick="toggleMobileMenu()">My Orders</a></li>
+                    <li><a href="/products" onclick="toggleMobileMenu()">Services</a></li>
+                    <li><a href="/cart" onclick="toggleMobileMenu()">Bookings <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders" onclick="toggleMobileMenu()">My Appointments</a></li>
                 </ul>
                 <div class="nav-actions">
                     <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
@@ -30,13 +30,13 @@
                 <div class="overlay-mask" onclick="toggleMobileMenu()"></div>
                 <div class="mobile-menu" id="mobileMenu">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                        <a href="/" class="logo" style="border: none; padding: 0;">Parivar Mart</a>
+                        <a href="/" class="logo" style="border: none; padding: 0;">Parivar Salon</a>
                         <i class="fas fa-times" onclick="toggleMobileMenu()" style="font-size: 24px; color: #333; cursor: pointer;"></i>
                     </div>
                     <a href="/" onclick="toggleMobileMenu()">Home</a>
-                    <a href="/products" onclick="toggleMobileMenu()">Products</a>
-                    <a href="/cart" onclick="toggleMobileMenu()">Cart</a>
-                    <a href="/orders" onclick="toggleMobileMenu()">My Orders</a>
+                    <a href="/products" onclick="toggleMobileMenu()">Services</a>
+                    <a href="/cart" onclick="toggleMobileMenu()">Bookings</a>
+                    <a href="/orders" onclick="toggleMobileMenu()">Appointments</a>
                     <div style="margin-top: auto; display: grid; gap: 15px;">
                         <a href="/login" class="btn btn-outline" style="justify-content: center; border-radius: 12px; height: 55px;">Login</a>
                         <a href="/register" class="btn btn-primary" style="justify-content: center; border-radius: 12px; height: 55px;">Register</a>
@@ -49,15 +49,15 @@
 
     <section class="hero">
         <div class="container">
-            <h1>Welcome to Parivar Mart</h1>
-            <p>Shop Best Quality Products at Amazing Prices</p>
-            <a href="/products" class="btn btn-primary">Shop Now</a>
+            <h1>Welcome to Parivar Salon</h1>
+            <p>Experience Luxury Beauty & Relaxation</p>
+            <a href="/products" class="btn btn-primary">Book Appointment</a>
         </div>
     </section>
 
     <section class="categories">
         <div class="container">
-            <h2 class="section-title">Shop by Category</h2>
+            <h2 class="section-title">Our Services</h2>
             <div class="category-grid" id="categoryGrid">
             </div>
         </div>
@@ -65,7 +65,7 @@
 
     <section class="products">
         <div class="container">
-            <h2 class="section-title">Featured Products</h2>
+            <h2 class="section-title">Popular Treatments</h2>
             <div class="products-grid" id="productGrid">
             </div>
         </div>
@@ -75,21 +75,21 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>Parivar Mart</h4>
-                    <p>Your trusted online shopping destination</p>
+                    <h4>Parivar Salon & Spa</h4>
+                    <p>Your destination for luxury beauty and wellness services</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="/products">Products</a></li>
-                        <li><a href="/cart">Cart</a></li>
-                        <li><a href="/orders">My Orders</a></li>
+                        <li><a href="/products">Services</a></li>
+                        <li><a href="/cart">Bookings</a></li>
+                        <li><a href="/orders">My Appointments</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Contact</h4>
                     <ul>
-                        <li>Email: info@parivanmart.com</li>
+                        <li>Email: info@parivarsalon.com</li>
                         <li>Phone: +91 1234567890</li>
                     </ul>
                 </div>

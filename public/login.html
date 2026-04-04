@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#ff6b35">
+    <meta name="theme-color" content="#d4a574">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Login - Parivar Mart</title>
+    <title>Login - Parivar Salon</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -13,21 +13,21 @@
     <header>
         <div class="container">
             <nav class="navbar" id="mainNav">
-                <a href="/" class="logo">Parivar Mart</a>
+                <a href="/" class="logo">Parivar Salon</a>
                 <ul class="nav-links">
                     <li><a href="/" onclick="toggleMobileMenu()">Home</a></li>
-                    <li><a href="/products" onclick="toggleMobileMenu()">Products</a></li>
+                    <li><a href="/products" onclick="toggleMobileMenu()">Services</a></li>
                 </ul>
                 <div class="overlay-mask" onclick="toggleMobileMenu()"></div>
                 <div class="mobile-menu" id="mobileMenu">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                        <a href="/" class="logo" style="border: none; padding: 0;">Parivar Mart</a>
+                        <a href="/" class="logo" style="border: none; padding: 0;">Parivar Salon</a>
                         <i class="fas fa-times" onclick="toggleMobileMenu()" style="font-size: 24px; color: #333; cursor: pointer;"></i>
                     </div>
                     <a href="/" onclick="toggleMobileMenu()">Home</a>
-                    <a href="/products" onclick="toggleMobileMenu()">Products</a>
-                    <a href="/cart" onclick="toggleMobileMenu()">Cart</a>
-                    <a href="/orders" onclick="toggleMobileMenu()">My Orders</a>
+                    <a href="/products" onclick="toggleMobileMenu()">Services</a>
+                    <a href="/cart" onclick="toggleMobileMenu()">Bookings</a>
+                    <a href="/orders" onclick="toggleMobileMenu()">Appointments</a>
                 </div>
                 <button class="mobile-toggle" onclick="toggleMobileMenu()">☰</button>
             </nav>
@@ -36,12 +36,12 @@
 
     <div class="auth-page-wrapper">
         <div class="auth-image-side">
-            <h1>Welcome to Parivar Mart</h1>
-            <p>Your one-stop destination for daily essentials, fresh produce, and premium household items.</p>
+            <h1>Welcome to Parivar Salon</h1>
+            <p>Your journey to beauty and relaxation starts here. Book your appointment today.</p>
         </div>
         <div class="auth-form-side">
             <div class="auth-form-container">
-                <h2>User Login</h2>
+                <h2>Member Login</h2>
                 <div id="loginMessage"></div>
                 <form id="loginForm">
                     <div class="form-group">
@@ -133,17 +133,17 @@
             <span>Home</span>
         </a>
         <a href="/products" class="mobile-nav-item">
-            <i class="fas fa-store"></i>
-            <span>Products</span>
+            <i class="fas fa-spa"></i>
+            <span>Services</span>
         </a>
         <a href="/cart" class="mobile-nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
+            <i class="fas fa-calendar-check"></i>
+            <span>Bookings</span>
             <span class="mobile-cart-badge" id="mobileCartCount">0</span>
         </a>
         <a href="/orders" class="mobile-nav-item">
-            <i class="fas fa-box"></i>
-            <span>Orders</span>
+            <i class="fas fa-clipboard-list"></i>
+            <span>Appointments</span>
         </a>
         <a href="/login" class="mobile-nav-item active">
             <i class="fas fa-user"></i>
