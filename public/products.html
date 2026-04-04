@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#d4a574">
+    <meta name="theme-color" content="#ff6b35">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Services - Parivar Salon</title>
+    <title>Products - Parivar Mart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -13,12 +13,12 @@
     <header>
         <div class="container">
             <nav class="navbar" id="mainNav">
-                <a href="/" class="logo">Parivar Salon</a>
+                <a href="/" class="logo">Parivar Mart</a>
                 <ul class="nav-links">
                     <li><a href="/" onclick="toggleMobileMenu()">Home</a></li>
-                    <li><a href="/products" onclick="toggleMobileMenu()">Services</a></li>
-                    <li><a href="/cart" onclick="toggleMobileMenu()">Bookings <span class="cart-badge" id="cartCount">0</span></a></li>
-                    <li><a href="/orders" onclick="toggleMobileMenu()">My Appointments</a></li>
+                    <li><a href="/products" onclick="toggleMobileMenu()">Products</a></li>
+                    <li><a href="/cart" onclick="toggleMobileMenu()">Cart <span class="cart-badge" id="cartCount">0</span></a></li>
+                    <li><a href="/orders" onclick="toggleMobileMenu()">My Orders</a></li>
                 </ul>
                 <div class="nav-actions">
                     <a href="/login" class="btn btn-outline" id="loginBtn">Login</a>
@@ -48,11 +48,11 @@
 
     <section class="products">
         <div class="container">
-            <h2 class="section-title">All Services</h2>
+            <h2 class="section-title">All Products</h2>
             <div style="margin-bottom: 30px;">
-                <label>Filter by Service: </label>
+                <label>Filter by Category: </label>
                 <select id="categoryFilter" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                    <option value="">All Services</option>
+                    <option value="">All Categories</option>
                 </select>
             </div>
             <div class="products-grid" id="productGrid">
@@ -64,15 +64,15 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>Parivar Salon & Spa</h4>
-                    <p>Your destination for luxury beauty and wellness services</p>
+                    <h4>Parivar Mart</h4>
+                    <p>Your trusted online shopping destination</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="/products">Services</a></li>
-                        <li><a href="/cart">Bookings</a></li>
-                        <li><a href="/orders">My Appointments</a></li>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="/cart">Cart</a></li>
+                        <li><a href="/orders">My Orders</a></li>
                     </ul>
                 </div>
             </div>

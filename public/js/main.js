@@ -125,9 +125,9 @@ async function loadProducts(categoryId = null) {
                         <div class="product-info">
                             <h3 class="product-name">${product.product_name}</h3>
                             <p class="product-price">₹${product.price}</p>
-                            <p class="product-stock">Available Slots: ${product.stock}</p>
+                            <p class="product-stock">Stock: ${product.stock}</p>
                             <button class="btn btn-primary btn-block btn-add-to-cart" onclick="addToCart(${product.id}, event)" ${product.stock <= 0 ? 'disabled' : ''}>
-                                ${product.stock <= 0 ? 'Unavailable' : 'Book Now'}
+                                ${product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                             </button>
                         </div>
                     </div>
@@ -395,8 +395,8 @@ async function initiateRazorpayPayment() {
             key: 'rzp_test_y0e2E3kqJw6qVd',
             amount: data.order.amount,
             currency: 'INR',
-            name: 'Parivar Salon',
-            description: 'Appointment Booking',
+            name: 'Parivar Mart',
+            description: 'Order Payment',
             order_id: data.order.id,
             handler: async function(response) {
                 const verifyRes = await fetch('/api/verify-payment', {
@@ -467,7 +467,7 @@ document.getElementById('checkoutForm')?.addEventListener('submit', async (e) =>
         const data = await res.json();
         
         if (data.success) {
-            alert('Appointment booked successfully! Appointment ID: ' + data.order_id);
+            alert('Order placed successfully! Order ID: ' + data.order_id);
             closeCheckoutModal();
             window.location.href = '/orders';
         } else {
